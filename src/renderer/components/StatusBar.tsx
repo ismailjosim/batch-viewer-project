@@ -111,7 +111,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
             className="mr-1 flex items-center gap-1 rounded p-1 text-[10px] transition-colors hover:bg-black/5 dark:hover:bg-white/10"
           >
             <ArrowUpCircle className="h-3 w-3 text-emerald-500" />
-            <span className="hidden lg:inline">v1.0.0</span>
+            <span className="hidden lg:inline">v1.0.2</span>
           </button>
         )}
 

@@ -1,6 +1,6 @@
 {
   "name": "batch-viewer",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Fast, modern Markdown Viewer and Editor for Batch Studio",
   "main": "dist-electron/main/index.js",
   "scripts": {
