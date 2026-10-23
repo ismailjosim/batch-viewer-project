@@ -1,134 +1,202 @@
-# Batch-Viewer — Fast Markdown Viewer & Editor (Batch Studio)
+<div align="center">
 
-> A lightweight, modern Markdown Viewer and Editor built under the **Batch Studio** suite for Windows 11.
+<img src="public/batch-viewer-logo.png" alt="Batch Viewer Logo" width="160" />
 
-![Batch-Viewer Preview](https://img.shields.io/badge/Batch%20Studio-Batch--Viewer-0078d4?style=for-the-badge&logo=windows)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+# Batch Viewer
+
+**The lightning-fast, all-in-one document viewer & editor for Windows 11.**  
+*Effortlessly read, edit, annotate, and export Markdown, PDF, Word, and text files in a unified, distraction-free workspace.*
+
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue?logo=github&style=for-the-badge)](https://github.com/ismailjosim/batch-viewer-project)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078d4?style=for-the-badge&logo=windows)](https://github.com/ismailjosim/batch-viewer-project)
+[![Electron](https://img.shields.io/badge/Electron-34.x-47848F?style=for-the-badge&logo=electron)](https://www.electronjs.org/)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+</div>
 
 ---
 
-## ✨ Features
+## 🌟 Overview
+
+**Batch Viewer** is a modern desktop application built for developers, writers, researchers, and students. Instead of juggling separate software for reading PDFs, drafting Markdown, reviewing Word documents, or checking logs, Batch Viewer provides a single high-performance workspace with a tabbed interface, dark/light themes, and native Windows integration.
+
+---
+
+## ✨ Key Features
 
 ### 📑 1. Multi-Document Tab System
+- **Universal Tab Bar**: Open dozens of files across formats in organized tabs.
+- **Context Menus**: Right-click tabs to close current, close others, close tabs to the right, copy file path, or reveal in File Explorer.
+- **Dirty State Tracking**: Instant visual dot indicator (`•`) on tabs with unsaved modifications and close-confirmation protection.
+- **Drag & Drop**: Drop files or folders directly anywhere into the window to open them immediately.
 
-- **Tabbed Interface**: Open multiple files simultaneously (Markdown, PDF, Word, Text).
-- **Tab Navigation**: Seamlessly switch tabs with mouse or `Ctrl + Tab`.
-- **Dirty State Indicator**: Visual dot indicator (`•`) on tabs with unsaved edits.
-- **Quick Shortcuts**: `Ctrl + N` for new tab, `Ctrl + W` to close tab.
+---
 
-### 📕 2. PDF Viewer, Highlight Annotator & Page Comments
+### 📕 2. PDF Annotator, Highlighter & Comments
+- **High-Resolution Canvas**: Crisp page rendering with responsive zoom (`50%` to `300%`), fit-to-width, and continuous page scrolling.
+- **Visual Highlighter**: Highlight text selections or drag rectangular bounding boxes with customizable colors (Yellow, Blue, Green, Pink, Violet).
+- **Sticky Page Comments**: Click anywhere on a page to attach a comment pin.
+- **Interactive Notes Drawer**: Slide-over panel summarizing all highlights and comments with jump-to-page navigation and deletion.
+- **Permanent Binary Saving (`Ctrl + S`)**: Uses `pdf-lib` to burn highlights and comments permanently into the `.pdf` file so other PDF viewers (Adobe Acrobat, Edge, Chrome) see your annotations.
 
-- **High-Resolution Canvas**: Crisp page rendering with page-by-page scrolling.
-- **Interactive Highlight Tool**: Select tool and drag over text/areas to highlight in customizable colors (Yellow, Blue, Pink, Green).
-- **Page Comments / Notes**: Click anywhere on a page to drop an annotation pin and leave detailed feedback notes.
-- **Permanent PDF Saving (`Ctrl + S`)**: Powered by `pdf-lib` to bake highlights and comment markers directly into the `.pdf` file so other PDF viewers (Adobe Acrobat, Edge, Chrome) see your annotations!
+---
 
-### 📘 3. Word & Google Docs (.docx) Viewer & Editor
+### 📝 3. Markdown Reader & Split-View Editor
+- **Three Viewing Modes**: Toggle between pure Reader View, full Editor View, or synchronized Split View (`Ctrl + E`).
+- **Synchronized Scrolling**: Dual-pane editor and preview stay strictly synchronized as you scroll.
+- **Formatting Toolbar**: One-click insertions for Headings (H1–H3), Bold, Italic, Strikethrough, Task Lists (`- [ ]`), Blockquotes, Code blocks, Tables, Links, and Images.
+- **Rich GFM & Extensions**:
+  - 📐 **LaTeX Math**: Render formulas and equations via KaTeX (`$E=mc^2$` and `$$\sum_{i=1}^n i$$`).
+  - 📊 **Mermaid Diagrams**: Interactive flowcharts, sequence diagrams, state machines, and Gantt charts.
+  - 💻 **Syntax Highlighting**: Over 50+ programming languages powered by `highlight.js`.
+- **Standalone HTML Export**: Export styled documents as a self-contained `.html` file with embedded styling and KaTeX fonts.
 
-- **Authentic Page Layout**: Renders `.docx` documents in an A4 paper sheet view with typography, tables, and lists powered by Mammoth.
-- **Reading / Editing View**: Toggle between pure reader view and editable document mode.
+---
+
+### 📘 4. Word (.docx) & Google Docs Viewer
+- **Authentic Paper Layout**: Converts `.docx` documents into clean, styled paper sheets powered by Mammoth.
+- **Reading / Editing Modes**: Switch between formatted document view and inline content editing.
 - **Save as PDF**: Export Word documents directly to PDF with one click.
 
-### 📝 4. Text (.txt, .log, .json, .csv) Editor
+---
 
-- Monospace plain-text viewing and editing with line numbers and full search support (`Ctrl + F`).
+### 💻 5. Plain Text & Code Editor
+- **Fast Text Editing**: Lightweight editor for `.txt`, `.log`, `.json`, `.csv`, `.yml`, `.xml`, `.js`, `.ts`, `.py`, `.html`, `.css`.
+- **Developer Essentials**: Line numbering, monospace typography, search and replace (`Ctrl + F`), and auto-indent.
 
-### 🛠️ 5. Markdown Formatting Toolbar
+---
 
-- Visual formatting bar above the editor:
-  - Headings (H1, H2, H3)
-  - Bold, Italic, Strikethrough
-  - Bullet Lists, Numbered Lists, Task Checklists (`- [ ]`)
-  - Quotes, Inline Code, Code Blocks
-  - Links, Images, Tables, Horizontal Rules
-  - LaTeX Math equations (`$$...$$`)
-  - Mermaid Flowcharts & Architecture diagrams
+### 📁 6. Workspace Explorer & Document Outline
+- **Sidebar File Tree**: Open any project folder to browse, open, and manage documents with file size info and type badges.
+- **Live Search Filter**: Filter large directory trees instantly by filename.
+- **Headings Outline**: Auto-generated Table of Contents (TOC) mapping H1 to H6 headings for one-click jump navigation.
 
-### 🔄 6. Version & Auto-Update Checker
+---
 
-- Check for updates button in the Status Bar displaying version information and status notifications.
+### 🏠 7. Modern Overview Screen
+- **Welcome Dashboard**: Clean landing screen when no files are open.
+- **Quick Launch Cards**: Open File, Open Directory Workspace, or Create New Document.
+- **Recent Files List**: Chronological grid of recently opened documents with badges, relative timestamps, and one-click removal.
 
 ---
 
 ## ⌨️ Keyboard Shortcuts
 
-| Shortcut                | Action                                                    |
-| :---------------------- | :-------------------------------------------------------- |
-| `Ctrl + O`              | Open file(s) from disk                                    |
-| `Ctrl + S`              | Save file changes (saves PDF with highlights & comments!) |
-| `Ctrl + N`              | Open new document tab                                     |
-| `Ctrl + W`              | Close current tab                                         |
-| `Ctrl + Tab`            | Switch to next tab                                        |
-| `Ctrl + E`              | Toggle View / Split / Edit mode (Markdown)                |
-| `Ctrl + F`              | Find in document                                          |
-| `Ctrl + +` / `Ctrl + =` | Zoom In                                                   |
-| `Ctrl + -`              | Zoom Out                                                  |
-| `Ctrl + 0`              | Reset Zoom to 100%                                        |
-| `Ctrl + B`              | Format bold                                               |
-| `Ctrl + I`              | Format italic                                             |
+| Shortcut | Action |
+| :--- | :--- |
+| <kbd>Ctrl</kbd> + <kbd>O</kbd> | Open File(s) from disk |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> | Open Workspace Folder |
+| <kbd>Ctrl</kbd> + <kbd>S</kbd> | Save changes (Burns annotations into PDF) |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Save As new file |
+| <kbd>Ctrl</kbd> + <kbd>N</kbd> | Create new document tab |
+| <kbd>Ctrl</kbd> + <kbd>W</kbd> | Close active tab |
+| <kbd>Ctrl</kbd> + <kbd>Tab</kbd> | Switch to next tab |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> | Switch to previous tab |
+| <kbd>Ctrl</kbd> + <kbd>E</kbd> | Cycle Markdown mode (Reader ➔ Split ➔ Editor) |
+| <kbd>Ctrl</kbd> + <kbd>B</kbd> | Toggle Sidebar (Files / Outline) |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> | Find in document |
+| <kbd>Ctrl</kbd> + <kbd>P</kbd> | Print / Export to PDF |
+| <kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>=</kbd> | Zoom In |
+| <kbd>Ctrl</kbd> + <kbd>-</kbd> | Zoom Out |
+| <kbd>Ctrl</kbd> + <kbd>0</kbd> | Reset Zoom to 100% |
+
+---
+
+## 🏗️ Architecture & Clean Code
+
+The codebase is built following clean modular design principles with strict separation of concerns, keeping all components under 300 lines:
+
+```
+batch-viewer/
+├── src/
+│   ├── main/                    # "Server Component" — Electron Backend
+│   │   ├── index.ts             # App lifecycle, single-instance lock & CLI args
+│   │   ├── windowManager.ts     # Window state, chrome frame & window controls
+│   │   └── fileManager.ts       # Filesystem service, directory scanner & native IO
+│   ├── preload/
+│   │   └── index.ts             # Secure contextBridge API definition
+│   └── renderer/                # Client Application (React 18 + TypeScript)
+│       ├── App.tsx              # Main orchestrator & layout
+│       ├── components/
+│       │   ├── overview/        # Welcome hero, action cards & recents grid
+│       │   ├── pdf/             # PDF canvas item, toolbar, drawer & modal
+│       │   ├── sidebar/         # Workspace tree & document headings outline
+│       │   ├── common/          # Drag-and-drop overlay & toast notifications
+│       │   ├── Editor.tsx       # Markdown Monaco-style editor
+│       │   ├── MarkdownViewer.tsx# Rendered GFM preview with KaTeX & Mermaid
+│       │   ├── WordViewer.tsx   # Docx paper sheet viewer
+│       │   ├── TextEditor.tsx   # Monospace text editor
+│       │   ├── TabBar.tsx       # Document tabs with context menu
+│       │   ├── TitleBar.tsx     # Custom Windows 11 title bar
+│       │   └── StatusBar.tsx    # Document stats, zoom & format info
+│       ├── hooks/
+│       │   ├── useDocumentTabs.ts     # Document tabs lifecycle & saving
+│       │   ├── useRecentFiles.ts      # Persistent recent files management
+│       │   └── useKeyboardShortcuts.ts# Global hotkeys handler
+│       └── utils/
+│           └── htmlExport.ts    # Standalone HTML bundle generator
+```
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- **Node.js**: v18+ (tested on Node.js v24)
-- **npm**: v9+
+- **Node.js**: v18.0.0 or higher
+- **npm**: v9.0.0 or higher
 
 ### Installation
 
-```powershell
-npm install
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ismailjosim/batch-viewer-project.git
+   cd batch-viewer-project
+   ```
 
-### Run in Development
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```powershell
-npm run dev
-```
-
-### Production Build
-
-```powershell
-npm run build
-```
+3. Launch development server:
+   ```bash
+   npm run dev
+   ```
 
 ---
 
-## 🏪 Microsoft Store Packaging Guide
+## 📦 Building & Distribution
 
-This app is configured with `electron-builder` to produce both a standard Windows installer (`.exe`) and an **MSIX / AppX** bundle for the Microsoft Store.
-
-### 1. Build Local Unpacked Package
-
-```powershell
+### 1. Build Local Unpacked Executable
+Compile the TypeScript code and generate an unpacked standalone Windows executable:
+```bash
 npm run pack
 ```
+The executable is located in:
+```
+release/win-unpacked/Batch-Viewer.exe
+```
 
-Find the output in the `release/` folder.
-
-### 2. Build Windows Installer & AppX / MSIX
-
-```powershell
+### 2. Build Windows Installer (.exe & MSIX)
+Build the complete NSIS setup installer and Microsoft Store package:
+```bash
 npm run dist
 ```
 
-### 3. Microsoft Store Partner Center Steps
+### 3. Setting as Default Windows App
+Batch Viewer is registered in `electron-builder.json` with native file associations for:
+- `.md`, `.markdown`, `.mdown`
+- `.pdf`
+- `.docx`
+- `.txt`, `.log`
 
-1. Register a developer account at [Microsoft Partner Center](https://partner.microsoft.com/dashboard).
-2. Go to **Apps and games** > **New product** > **MSIX or PWA app**.
-3. Reserve your app name (e.g., `Batch-Viewer` or `Batch Studio Markdown Viewer`).
-4. In `electron-builder.json`, update the `identityName` and `publisherDisplayName` to match your Partner Center account details:
-   ```json
-   "appx": {
-     "identityName": "BatchStudio.BatchViewer",
-     "applicationId": "BatchViewer",
-     "publisherDisplayName": "YOUR_PUBLISHER_DISPLAY_NAME"
-   }
-   ```
-5. Run the **Windows App Certification Kit (WACK)** on the generated `.msix` / `.appx`:
-   ```powershell
-   appcert.exe test -appxpackagepath <path-to-msix> -reportoutputpath <path-to-report.xml>
-   ```
-6. Upload the `.msix` bundle to Partner Center and submit for certification.
+To make it your default viewer on Windows:
+1. Right-click any `.md` or `.pdf` file ➔ **Open with** ➔ **Choose another app**.
+2. Select **Batch-Viewer** and check **"Always use this app to open files"**.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
