@@ -1,0 +1,78 @@
+{
+  "appId": "com.batchstudio.batchviewer",
+  "productName": "Batch-Viewer",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*",
+    "build/**/*"
+  ],
+  "win": {
+    "icon": "build/icon.ico",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "fileAssociations": [
+      {
+        "ext": "md",
+        "name": "Markdown Document",
+        "description": "Markdown Document",
+        "role": "Editor"
+      },
+      {
+        "ext": "markdown",
+        "name": "Markdown Document",
+        "description": "Markdown Document",
+        "role": "Editor"
+      },
+      {
+        "ext": "mdown",
+        "name": "Markdown Document",
+        "description": "Markdown Document",
+        "role": "Editor"
+      },
+      {
+        "ext": "pdf",
+        "name": "PDF Document",
+        "description": "PDF Document",
+        "role": "Editor"
+      },
+      {
+        "ext": "docx",
+        "name": "Word Document",
+        "description": "Microsoft Word Document",
+        "role": "Editor"
+      },
+      {
+        "ext": "txt",
+        "name": "Text Document",
+        "description": "Plain Text Document",
+        "role": "Editor"
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": "always",
+    "createStartMenuShortcut": true,
+    "shortcutName": "Batch-Viewer",
+    "uninstallDisplayName": "Batch-Viewer",
+    "installerIcon": "build/icon.ico",
+    "uninstallerIcon": "build/icon.ico",
+    "runAfterFinish": true
+  },
+  "appx": {
+    "identityName": "BatchStudio.BatchViewer",
+    "applicationId": "BatchViewer",
+    "publisherDisplayName": "Ismail",
+    "backgroundColor": "#202020"
+  }
+}

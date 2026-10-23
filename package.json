@@ -1,0 +1,59 @@
+{
+  "name": "batch-viewer",
+  "version": "1.0.0",
+  "description": "Fast, modern Markdown Viewer and Editor for Batch Studio",
+  "main": "dist-electron/main/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "start": "concurrently -k \"npm run dev\" \"npm run electron:wait\"",
+    "electron:dev": "electron . --dev",
+    "pack": "npm run build && npm run build:electron && electron-builder --dir",
+    "dist": "npm run build && npm run build:electron && electron-builder --win nsis",
+    "dist:store": "npm run build && npm run build:electron && electron-builder --win appx"
+  },
+  "keywords": [
+    "markdown",
+    "viewer",
+    "editor",
+    "windows",
+    "fluent-ui",
+    "microsoft-store"
+  ],
+  "author": "Ismail",
+  "license": "MIT",
+  "dependencies": {
+    "dompurify": "^3.2.4",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.21",
+    "lucide-react": "^0.475.0",
+    "mammoth": "^1.13.0",
+    "marked": "^15.0.7",
+    "marked-katex-extension": "^5.1.4",
+    "mermaid": "^11.4.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^3.11.174",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/katex": "^0.16.7",
+    "@types/node": "^22.13.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
+    "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vite-plugin-electron": "^0.29.0",
+    "vite-plugin-electron-renderer": "^0.14.6",
+    "wait-on": "^8.0.2"
+  }
+}
