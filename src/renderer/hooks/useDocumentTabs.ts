@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { DocumentTab, detectFileType, PdfHighlight, PdfComment, DocumentType } from '../types';
 
 interface UseDocumentTabsProps {
@@ -8,6 +8,12 @@ interface UseDocumentTabsProps {
 export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
   const [tabs, setTabs] = useState<DocumentTab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string>('overview');
+
+  const tabsRef = useRef<DocumentTab[]>(tabs);
+  tabsRef.current = tabs;
+
+  const hasLoadedInitialRef = useRef<boolean>(false);
+  const openingPathsRef = useRef<Set<string>>(new Set());
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const zoom = activeTab?.zoom || 1.0;
@@ -51,62 +57,55 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
   // Open single file helper
   const openFileFromDisk = useCallback(
     async (path: string) => {
-      if (!window.api) return;
+      if (!window.api || !path) return;
+      const normalizedPath = path.toLowerCase();
 
-      const existing = tabs.find((t) => t.filePath && t.filePath.toLowerCase() === path.toLowerCase());
+      // Check if already open
+      const existing = tabsRef.current.find((t) => t.filePath && t.filePath.toLowerCase() === normalizedPath);
       if (existing) {
         setActiveTabId(existing.id);
         return;
       }
 
-      const fileType = detectFileType(path);
+      // Prevent concurrent duplicate openings
+      if (openingPathsRef.current.has(normalizedPath)) return;
+      openingPathsRef.current.add(normalizedPath);
 
-      if (fileType === 'pdf' || fileType === 'word') {
-        const binRes = await window.api.readBinaryFile(path);
-        if (binRes.success && binRes.base64) {
-          const tabFileName = binRes.fileName || path.split(/[\/\\]/).pop() || 'Document';
+      try {
+        const fileType = detectFileType(path);
+        const isBin = fileType === 'pdf' || fileType === 'word';
+        const res = isBin ? await window.api.readBinaryFile(path) : await window.api.readFile(path);
+
+        if (res.success) {
+          const tabFileName = res.fileName || path.split(/[\/\\]/).pop() || 'Document';
+          const textContent = 'content' in res && res.content !== undefined ? res.content : '';
+          const base64Data = 'base64' in res ? res.base64 : undefined;
+
           const newTab: DocumentTab = {
             id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
             filePath: path,
             fileName: tabFileName,
             fileType,
-            content: '',
-            originalContent: '',
-            base64Data: binRes.base64,
-            dirName: binRes.dirName,
+            content: textContent,
+            originalContent: textContent,
+            base64Data,
+            dirName: res.dirName,
             isDirty: false,
             pdfHighlights: [],
             pdfComments: [],
             zoom: 1.0,
           };
+
           setTabs((prev) => [...prev, newTab]);
           setActiveTabId(newTab.id);
           onAddToRecents(path, tabFileName, fileType);
           window.api.watchFile(path);
         }
-      } else {
-        const textRes = await window.api.readFile(path);
-        if (textRes.success && textRes.content !== undefined) {
-          const tabFileName = textRes.fileName || path.split(/[\/\\]/).pop() || 'Document';
-          const newTab: DocumentTab = {
-            id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-            filePath: path,
-            fileName: tabFileName,
-            fileType,
-            content: textRes.content,
-            originalContent: textRes.content,
-            dirName: textRes.dirName,
-            isDirty: false,
-            zoom: 1.0,
-          };
-          setTabs((prev) => [...prev, newTab]);
-          setActiveTabId(newTab.id);
-          onAddToRecents(path, tabFileName, fileType);
-          window.api.watchFile(path);
-        }
+      } finally {
+        openingPathsRef.current.delete(normalizedPath);
       }
     },
-    [tabs, onAddToRecents]
+    [onAddToRecents]
   );
 
   // Open multiple files from disk
@@ -119,15 +118,18 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
     [openFileFromDisk]
   );
 
-  // Initial file opening & CLI event listeners
+  // Initial file opening & CLI event listeners (Mount once)
   useEffect(() => {
     if (!window.api) return;
 
-    window.api.getInitialFiles().then((initials) => {
-      if (initials && initials.length > 0) {
-        openMultipleFilesFromDisk(initials);
-      }
-    });
+    if (!hasLoadedInitialRef.current) {
+      hasLoadedInitialRef.current = true;
+      window.api.getInitialFiles().then((initials) => {
+        if (initials && initials.length > 0) {
+          openMultipleFilesFromDisk(initials);
+        }
+      });
+    }
 
     const unsubMultipleCLI = window.api.onFilesOpenedFromCLI((paths) => {
       openMultipleFilesFromDisk(paths);

@@ -14,6 +14,10 @@ export function closeWatcher() {
   currentWatchedFile = null;
 }
 
+function isValidPath(filePath: unknown): filePath is string {
+  return typeof filePath === 'string' && filePath.trim().length > 0 && !filePath.includes('\0');
+}
+
 export function registerFileIpcHandlers() {
   // File Open Dialog
   ipcMain.handle('file:open-dialog', async () => {
@@ -59,6 +63,9 @@ export function registerFileIpcHandlers() {
       const files: Array<{ name: string; path: string; size: number }> = [];
 
       for (const entry of entries) {
+        if (files.length >= 1000) break; // Safeguard against massive directories
+        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+
         if (entry.isFile()) {
           const ext = path.extname(entry.name).toLowerCase();
           if (supportedExts.has(ext)) {
@@ -80,6 +87,9 @@ export function registerFileIpcHandlers() {
 
   // Read Text File
   ipcMain.handle('file:read', async (_event, filePath: string) => {
+    if (!isValidPath(filePath)) {
+      return { success: false, error: 'Invalid file path' };
+    }
     try {
       const content = await fs.promises.readFile(filePath, 'utf-8');
       const stats = await fs.promises.stat(filePath);
@@ -98,6 +108,9 @@ export function registerFileIpcHandlers() {
 
   // Read Binary File (PDF / Word)
   ipcMain.handle('file:read-binary', async (_event, filePath: string) => {
+    if (!isValidPath(filePath)) {
+      return { success: false, error: 'Invalid file path' };
+    }
     try {
       const buffer = await fs.promises.readFile(filePath);
       const stats = await fs.promises.stat(filePath);
@@ -116,8 +129,15 @@ export function registerFileIpcHandlers() {
 
   // Save Text File
   ipcMain.handle('file:save', async (_event, filePath: string, content: string) => {
+    if (!isValidPath(filePath)) {
+      return { success: false, error: 'Invalid file path' };
+    }
     try {
-      await fs.promises.writeFile(filePath, content, 'utf-8');
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        await fs.promises.mkdir(dir, { recursive: true });
+      }
+      await fs.promises.writeFile(filePath, content ?? '', 'utf-8');
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message };
@@ -126,8 +146,15 @@ export function registerFileIpcHandlers() {
 
   // Save Binary File
   ipcMain.handle('file:save-binary', async (_event, filePath: string, base64: string) => {
+    if (!isValidPath(filePath)) {
+      return { success: false, error: 'Invalid file path' };
+    }
     try {
-      const buffer = Buffer.from(base64, 'base64');
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        await fs.promises.mkdir(dir, { recursive: true });
+      }
+      const buffer = Buffer.from(base64 || '', 'base64');
       await fs.promises.writeFile(filePath, buffer);
       return { success: true };
     } catch (error: any) {
@@ -253,8 +280,12 @@ export function registerFileIpcHandlers() {
   });
 
   ipcMain.handle('shell:open-external', async (_event, url: string) => {
-    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-      await shell.openExternal(url);
-    }
+    if (!url || typeof url !== 'string') return;
+    try {
+      const parsed = new URL(url);
+      if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+        await shell.openExternal(url);
+      }
+    } catch {}
   });
 }

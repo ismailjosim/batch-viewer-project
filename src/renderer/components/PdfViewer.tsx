@@ -108,28 +108,30 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
 
   // Drag-to-Highlight handlers
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool === 'highlight') {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top, pageNumber });
-      setCurrentDragBox({ x: e.clientX - rect.left, y: e.clientY - rect.top, width: 0, height: 0, pageNumber });
-    }
+    if (activeTool !== 'highlight') return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setDragStart({ x, y, pageNumber });
+    setCurrentDragBox({ x, y, width: 0, height: 0, pageNumber });
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool === 'highlight' && dragStart && dragStart.pageNumber === pageNumber) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const currentX = e.clientX - rect.left;
-      const currentY = e.clientY - rect.top;
-      const x = Math.min(dragStart.x, currentX);
-      const y = Math.min(dragStart.y, currentY);
-      const width = Math.abs(currentX - dragStart.x);
-      const height = Math.abs(currentY - dragStart.y);
-      setCurrentDragBox({ x, y, width, height, pageNumber });
-    }
+    if (activeTool !== 'highlight' || !dragStart || dragStart.pageNumber !== pageNumber) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const curX = e.clientX - rect.left;
+    const curY = e.clientY - rect.top;
+    setCurrentDragBox({
+      x: Math.min(dragStart.x, curX),
+      y: Math.min(dragStart.y, curY),
+      width: Math.abs(curX - dragStart.x),
+      height: Math.abs(curY - dragStart.y),
+      pageNumber,
+    });
   };
 
   const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool === 'highlight' && dragStart && currentDragBox && currentDragBox.pageNumber === pageNumber) {
+    if (activeTool === 'highlight' && dragStart && currentDragBox?.pageNumber === pageNumber) {
       const rect = e.currentTarget.getBoundingClientRect();
       if (currentDragBox.width > 5 && currentDragBox.height > 5) {
         const newHighlight: PdfHighlight = {
@@ -180,13 +182,8 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     setCommentInput('');
   };
 
-  const deleteHighlight = (id: string) => {
-    onAnnotationsChange(highlights.filter((h) => h.id !== id), comments);
-  };
-
-  const deleteComment = (id: string) => {
-    onAnnotationsChange(highlights, comments.filter((c) => c.id !== id));
-  };
+  const deleteHighlight = (id: string) => onAnnotationsChange(highlights.filter((h) => h.id !== id), comments);
+  const deleteComment = (id: string) => onAnnotationsChange(highlights, comments.filter((c) => c.id !== id));
 
   // Keyboard shortcut Ctrl + S
   useEffect(() => {

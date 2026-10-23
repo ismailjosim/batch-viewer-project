@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import mammoth from 'mammoth';
-import { FileDown, Edit3, Eye, Printer, ZoomIn, ZoomOut, Check } from 'lucide-react';
+import DOMPurify from 'dompurify';
+import { FileDown, Edit3, Eye } from 'lucide-react';
 
 interface WordViewerProps {
   base64Data?: string;
@@ -19,16 +20,18 @@ export const WordViewer: React.FC<WordViewerProps> = ({
   onContentChange,
   onSaveAsPdf,
 }) => {
-  const [htmlContent, setHtmlContent] = useState<string>(initialHtml || '');
+  const [htmlContent, setHtmlContent] = useState<string>(() =>
+    initialHtml ? DOMPurify.sanitize(initialHtml) : ''
+  );
   const [loading, setLoading] = useState<boolean>(!initialHtml && !!base64Data);
   const [error, setError] = useState<string | null>(null);
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const editorRef = useRef<HTMLDivElement>(null);
 
-  // Convert docx buffer to HTML using Mammoth
+  // Convert docx buffer to HTML using Mammoth with DOMPurify sanitization
   useEffect(() => {
     if (initialHtml) {
-      setHtmlContent(initialHtml);
+      setHtmlContent(DOMPurify.sanitize(initialHtml));
       return;
     }
 
@@ -48,9 +51,12 @@ export const WordViewer: React.FC<WordViewerProps> = ({
 
         const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer });
         if (isMounted) {
-          const generatedHtml = result.value;
-          setHtmlContent(generatedHtml);
-          onContentChange(generatedHtml);
+          const sanitizedHtml = DOMPurify.sanitize(result.value, {
+            ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'td', 'th'],
+            ADD_ATTR: ['style', 'class', 'colspan', 'rowspan'],
+          });
+          setHtmlContent(sanitizedHtml);
+          onContentChange(sanitizedHtml);
           setLoading(false);
         }
       } catch (err: any) {
@@ -65,11 +71,11 @@ export const WordViewer: React.FC<WordViewerProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [base64Data, initialHtml]);
+  }, [base64Data, initialHtml, onContentChange]);
 
   const handleInput = () => {
     if (editorRef.current) {
-      const updated = editorRef.current.innerHTML;
+      const updated = DOMPurify.sanitize(editorRef.current.innerHTML);
       setHtmlContent(updated);
       onContentChange(updated);
     }

@@ -25,7 +25,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     mermaid.initialize({
       startOnLoad: false,
       theme: theme === "dark" ? "dark" : "neutral",
-      securityLevel: "loose",
+      securityLevel: "strict",
       fontFamily: "Segoe UI, system-ui, sans-serif",
     });
   }, [theme]);
@@ -100,23 +100,26 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
               : `${cleanDir}/${cleanHref}`;
             resolvedHref = `file:///${fullPath}`;
           }
-          return `<img src="${resolvedHref}" alt="${text || ""}" title="${title || ""}" class="max-w-full rounded-md shadow-sm my-4" />`;
+          const safeHref = DOMPurify.sanitize(resolvedHref);
+          const safeAlt = (text || "").replace(/"/g, "&quot;");
+          const safeTitle = (title || "").replace(/"/g, "&quot;");
+          return `<img src="${safeHref}" alt="${safeAlt}" title="${safeTitle}" class="max-w-full rounded-md shadow-sm my-4" />`;
         },
       },
     });
 
     const rawHtml = marked.parse(content || "") as string;
     return DOMPurify.sanitize(rawHtml, {
-      ADD_TAGS: ["iframe"],
-      ADD_ATTR: ["target", "data-code"],
+      ADD_TAGS: ["mark"],
+      ADD_ATTR: ["target", "data-code", "id", "class"],
     });
   }, [content, dirName]);
 
-  // Handle Mermaid rendering and Copy button clicks after DOM update
+  // Handle Mermaid rendering, Copy button clicks, and secure Link navigation
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Render Mermaid diagrams
+    // Render Mermaid diagrams safely
     const mermaidElements = containerRef.current.querySelectorAll(".mermaid");
     if (mermaidElements.length > 0) {
       try {
@@ -132,12 +135,31 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
     }
 
+    const handlers: Array<{ el: Element; type: string; fn: EventListener }> = [];
+
+    // Intercept Links to prevent in-app navigation hijack
+    const linkElements = containerRef.current.querySelectorAll("a");
+    linkElements.forEach((link) => {
+      const clickHandler: EventListener = (e: Event) => {
+        const href = link.getAttribute("href");
+        if (href) {
+          e.preventDefault();
+          if (href.startsWith("#")) {
+            const targetEl = containerRef.current?.querySelector(href);
+            targetEl?.scrollIntoView({ behavior: "smooth" });
+          } else if (window.api) {
+            window.api.openExternal(href);
+          }
+        }
+      };
+      link.addEventListener("click", clickHandler);
+      handlers.push({ el: link, type: "click", fn: clickHandler });
+    });
+
     // Attach Copy event listeners
     const copyButtons = containerRef.current.querySelectorAll(".copy-btn");
-    const handlers: Array<{ btn: Element; handler: () => void }> = [];
-
     copyButtons.forEach((btn) => {
-      const handler = () => {
+      const copyHandler: EventListener = () => {
         const encoded = btn.getAttribute("data-code");
         if (encoded) {
           navigator.clipboard.writeText(decodeURIComponent(encoded));
@@ -150,13 +172,13 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
           }, 1500);
         }
       };
-      btn.addEventListener("click", handler);
-      handlers.push({ btn, handler });
+      btn.addEventListener("click", copyHandler);
+      handlers.push({ el: btn, type: "click", fn: copyHandler });
     });
 
     return () => {
-      handlers.forEach(({ btn, handler }) => {
-        btn.removeEventListener("click", handler);
+      handlers.forEach(({ el, type, fn }) => {
+        el.removeEventListener(type, fn);
       });
     };
   }, [htmlContent]);

@@ -1,15 +1,36 @@
+import DOMPurify from 'dompurify';
+
+function escapeHtml(text: string): string {
+  return text.replace(/[&<>"']/g, (m) => {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+      default: return m;
+    }
+  });
+}
+
 export async function exportMarkdownToHtml(fileName: string): Promise<{ success: boolean; path?: string; error?: string }> {
   if (!window.api) return { success: false, error: 'Electron API unavailable' };
 
   try {
-    const defaultName = (fileName.replace(/\.[^/.]+$/, '') || 'Document') + '.html';
-    const renderedHtml = document.querySelector('.markdown-body')?.innerHTML || '';
+    const cleanBaseName = fileName.replace(/\.[^/.]+$/, '') || 'Document';
+    const defaultName = cleanBaseName + '.html';
+    const rawHtml = document.querySelector('.markdown-body')?.innerHTML || '';
+    const safeContent = DOMPurify.sanitize(rawHtml, {
+      ADD_TAGS: ['mark'],
+      ADD_ATTR: ['target', 'data-code', 'id', 'class'],
+    });
+
     const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${fileName}</title>
+  <title>${escapeHtml(cleanBaseName)}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
   <style>
@@ -44,7 +65,7 @@ export async function exportMarkdownToHtml(fileName: string): Promise<{ success:
 </head>
 <body>
   <div class="container">
-    ${renderedHtml}
+    ${safeContent}
   </div>
 </body>
 </html>`;

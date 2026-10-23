@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, nativeTheme, app } from 'electron';
+import { BrowserWindow, ipcMain, nativeTheme, app, shell } from 'electron';
 import path from 'path';
 import fs from 'fs';
 
@@ -33,6 +33,32 @@ export function createMainWindow(initialFiles: string[] = []): BrowserWindow {
       nodeIntegration: false,
     },
     show: false,
+  });
+
+  // Security: Deny window.open popups and open valid web links in the user's default browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      const parsed = new URL(url);
+      if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+        shell.openExternal(url);
+      }
+    } catch {}
+    return { action: 'deny' };
+  });
+
+  // Security: Prevent in-app navigation away from application origin
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    const devUrl = process.env.VITE_DEV_SERVER_URL;
+    if (devUrl && url.startsWith(devUrl)) return;
+    if (!devUrl && url.startsWith('file://')) return;
+
+    event.preventDefault();
+    try {
+      const parsed = new URL(url);
+      if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+        shell.openExternal(url);
+      }
+    } catch {}
   });
 
   // Smooth window show
