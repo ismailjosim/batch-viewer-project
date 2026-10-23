@@ -280,7 +280,7 @@ export const App: React.FC = () => {
         onExportHTML={activeTab?.fileType === 'markdown' ? handleExportHTML : undefined}
         onOpenSearch={() => setIsSearchOpen(true)}
         onCheckUpdates={() => {
-          setUpdateToast('Batch-Viewer v1.0.0 is up to date (Latest Stable Release)');
+          setUpdateToast('Batch-Viewer v1.0.2 is up to date (Latest Stable Release)');
           setTimeout(() => setUpdateToast(null), 4000);
         }}
       />
