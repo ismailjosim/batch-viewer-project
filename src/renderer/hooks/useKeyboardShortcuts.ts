@@ -100,8 +100,31 @@ export function useKeyboardShortcuts({
       }
     };
 
+    // Ctrl + Mouse Wheel Zoom
+    let lastWheelTime = 0;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (activeTabId !== 'overview' && activeTab) {
+          const now = Date.now();
+          if (now - lastWheelTime < 50) return;
+          lastWheelTime = now;
+
+          if (e.deltaY < 0) {
+            onZoomIn();
+          } else if (e.deltaY > 0) {
+            onZoomOut();
+          }
+        }
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+    };
   }, [
     tabs,
     activeTabId,

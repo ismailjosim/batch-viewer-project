@@ -187,8 +187,8 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   return (
     <div
       ref={containerRef}
-      style={{ fontSize: `${zoom * 100}%` }}
-      className="markdown-body p-6 md:p-10 max-w-4xl mx-auto w-full select-text transition-all leading-relaxed"
+      style={{ zoom: zoom }}
+      className="markdown-body p-6 md:p-10 max-w-6xl mx-auto w-full select-text leading-relaxed"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );

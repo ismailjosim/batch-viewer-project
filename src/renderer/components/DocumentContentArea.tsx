@@ -134,7 +134,7 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
         <div
           ref={viewerContainerRef as React.RefObject<HTMLDivElement>}
           onScroll={viewMode === "split" ? onViewerScroll : undefined}
-          className={`h-full overflow-y-auto ${viewMode === "split" ? "w-1/2" : "w-full"}`}
+          className={`h-full overflow-y-auto overflow-x-auto ${viewMode === "split" ? "w-1/2" : "w-full"}`}
         >
           <MarkdownViewer
             content={activeTab.content || ""}

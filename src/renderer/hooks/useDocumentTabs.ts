@@ -292,7 +292,7 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
       prev.map((t) => {
         if (t.id === activeTabId) {
           const current = t.zoom || 1.0;
-          const next = Math.min(2.5, Math.max(0.5, Number((current + delta).toFixed(1))));
+          const next = Math.min(2.5, Math.max(0.5, Number((current + delta).toFixed(2))));
           return { ...t, zoom: next };
         }
         return t;
