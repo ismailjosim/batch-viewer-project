@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,14 +8,14 @@ import {
   List,
   Save,
   Check,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface PdfToolbarProps {
   currentPage: number;
   numPages: number;
   pageInput: string;
   isLoading: boolean;
-  activeTool: "select" | "highlight" | "comment";
+  activeTool: 'select' | 'highlight' | 'comment';
   highlightColor: string;
   isNotesDrawerOpen: boolean;
   totalAnnotations: number;
@@ -25,18 +25,18 @@ interface PdfToolbarProps {
   onPageInputCommit: () => void;
   onPrevPage: () => void;
   onNextPage: () => void;
-  onSelectTool: (tool: "select" | "highlight" | "comment") => void;
+  onSelectTool: (tool: 'select' | 'highlight' | 'comment') => void;
   onSelectColor: (color: string) => void;
   onToggleNotesDrawer: () => void;
   onSave: () => void;
 }
 
 const HIGHLIGHT_COLORS = [
-  { hex: "#ffe066", name: "Yellow" },
-  { hex: "#a3e635", name: "Green" },
-  { hex: "#67e8f9", name: "Cyan" },
-  { hex: "#f472b6", name: "Pink" },
-  { hex: "#fb923c", name: "Orange" },
+  { hex: '#ffe066', name: 'Yellow' },
+  { hex: '#a3e635', name: 'Green' },
+  { hex: '#67e8f9', name: 'Cyan' },
+  { hex: '#f472b6', name: 'Pink' },
+  { hex: '#fb923c', name: 'Orange' },
 ];
 
 export const PdfToolbar: React.FC<PdfToolbarProps> = ({
@@ -60,16 +60,16 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
   onSave,
 }) => {
   return (
-    <div className="h-10 px-4 flex items-center justify-between bg-fluent-card-light/95 dark:bg-fluent-card-dark/95 border-b border-fluent-border-light dark:border-fluent-border-dark select-none text-xs shrink-0 z-20 shadow-sm">
+    <div className="z-20 flex h-10 shrink-0 select-none items-center justify-between border-b border-fluent-border-light bg-fluent-card-light/95 px-4 text-xs shadow-sm dark:border-fluent-border-dark dark:bg-fluent-card-dark/95">
       {/* Page Navigation */}
       <div className="flex items-center gap-1.5">
         <button
           onClick={onPrevPage}
           disabled={currentPage <= 1 || isLoading}
           title="Previous Page"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-40 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 disabled:opacity-40 dark:hover:bg-white/10"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="h-4 w-4" />
         </button>
         <div className="flex items-center gap-1 font-mono text-xs">
           <input
@@ -77,64 +77,62 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
             value={pageInput}
             disabled={isLoading}
             onChange={(e) => onPageInputChange(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && onPageInputCommit()}
+            onKeyDown={(e) => e.key === 'Enter' && onPageInputCommit()}
             onBlur={onPageInputCommit}
-            className="w-9 text-center py-0.5 rounded bg-black/5 dark:bg-white/10 border border-fluent-border-light dark:border-fluent-border-dark outline-none focus:border-fluent-accent"
+            className="w-9 rounded border border-fluent-border-light bg-black/5 py-0.5 text-center outline-none focus:border-fluent-accent dark:border-fluent-border-dark dark:bg-white/10"
           />
-          <span className="opacity-60">
-            / {isLoading ? "..." : numPages || 1}
-          </span>
+          <span className="opacity-60">/ {isLoading ? '...' : numPages || 1}</span>
         </div>
         <button
           onClick={onNextPage}
           disabled={currentPage >= numPages || isLoading}
           title="Next Page"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-40 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 disabled:opacity-40 dark:hover:bg-white/10"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
       {/* Tools: Select, Highlight, Comment */}
-      <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-0.5 rounded-lg border border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="flex items-center gap-1 rounded-lg border border-fluent-border-light bg-black/5 p-0.5 dark:border-fluent-border-dark dark:bg-white/5">
         <button
-          onClick={() => onSelectTool("select")}
+          onClick={() => onSelectTool('select')}
           title="Select / Pointer Tool"
-          className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-all ${
-            activeTool === "select"
-              ? "bg-fluent-accent text-white shadow-sm"
-              : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
+            activeTool === 'select'
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
           }`}
         >
-          <MousePointer className="w-3.5 h-3.5" />
+          <MousePointer className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Select</span>
         </button>
 
         <button
-          onClick={() => onSelectTool("highlight")}
+          onClick={() => onSelectTool('highlight')}
           title="Highlight Mode (Drag over text or area to highlight)"
-          className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-all ${
-            activeTool === "highlight"
-              ? "bg-fluent-accent text-white shadow-sm"
-              : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
+            activeTool === 'highlight'
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
           }`}
         >
-          <Highlighter className="w-3.5 h-3.5" />
+          <Highlighter className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Highlight</span>
         </button>
 
-        {activeTool === "highlight" && (
-          <div className="flex items-center gap-1 px-1.5 border-l border-fluent-border-light dark:border-fluent-border-dark">
+        {activeTool === 'highlight' && (
+          <div className="flex items-center gap-1 border-l border-fluent-border-light px-1.5 dark:border-fluent-border-dark">
             {HIGHLIGHT_COLORS.map((c) => (
               <button
                 key={c.hex}
                 onClick={() => onSelectColor(c.hex)}
                 title={c.name}
                 style={{ backgroundColor: c.hex }}
-                className={`w-4 h-4 rounded-full border ${
+                className={`h-4 w-4 rounded-full border ${
                   highlightColor === c.hex
-                    ? "ring-2 ring-fluent-accent scale-110"
-                    : "opacity-70 hover:opacity-100"
+                    ? 'scale-110 ring-2 ring-fluent-accent'
+                    : 'opacity-70 hover:opacity-100'
                 } transition-all`}
               />
             ))}
@@ -142,15 +140,15 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
         )}
 
         <button
-          onClick={() => onSelectTool("comment")}
+          onClick={() => onSelectTool('comment')}
           title="Add Comment Pin (Click anywhere on page to place note)"
-          className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-all ${
-            activeTool === "comment"
-              ? "bg-fluent-accent text-white shadow-sm"
-              : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
+            activeTool === 'comment'
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
           }`}
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Comment</span>
         </button>
       </div>
@@ -160,20 +158,18 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
         <button
           onClick={onToggleNotesDrawer}
           title="Annotations & Comments List"
-          className={`px-2.5 py-1 rounded font-medium flex items-center gap-1.5 transition-all ${
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 font-medium transition-all ${
             isNotesDrawerOpen
-              ? "bg-fluent-accent text-white shadow-sm"
-              : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
           }`}
         >
-          <List className="w-3.5 h-3.5" />
+          <List className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Notes</span>
           {totalAnnotations > 0 && (
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                isNotesDrawerOpen
-                  ? "bg-white text-fluent-accent"
-                  : "bg-fluent-accent text-white"
+              className={`py-0.2 rounded-full px-1.5 text-[10px] font-bold ${
+                isNotesDrawerOpen ? 'bg-white text-fluent-accent' : 'bg-fluent-accent text-white'
               }`}
             >
               {totalAnnotations}
@@ -185,25 +181,25 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
           onClick={onSave}
           disabled={isSaving || isLoading}
           title="Save PDF with Highlights & Comments (Ctrl+S)"
-          className={`px-3 py-1 rounded font-medium flex items-center gap-1.5 transition-all ${
+          className={`flex items-center gap-1.5 rounded px-3 py-1 font-medium transition-all ${
             saveSuccess
-              ? "bg-emerald-600 text-white"
-              : "bg-fluent-accent text-white hover:opacity-90 shadow-sm disabled:opacity-50"
+              ? 'bg-emerald-600 text-white'
+              : 'bg-fluent-accent text-white shadow-sm hover:opacity-90 disabled:opacity-50'
           }`}
         >
           {saveSuccess ? (
             <>
-              <Check className="w-3.5 h-3.5" />
+              <Check className="h-3.5 w-3.5" />
               <span>Saved!</span>
             </>
           ) : isSaving ? (
             <>
-              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
               <span>Saving...</span>
             </>
           ) : (
             <>
-              <Save className="w-3.5 h-3.5" />
+              <Save className="h-3.5 w-3.5" />
               <span>Save PDF</span>
             </>
           )}

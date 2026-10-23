@@ -1,14 +1,6 @@
-import React, { useMemo } from "react";
-import {
-  Search,
-  FileDown,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  ArrowUpCircle,
-  Globe,
-} from "lucide-react";
-import { DocumentType } from "../types";
+import React, { useMemo } from 'react';
+import { Search, FileDown, ZoomIn, ZoomOut, ArrowUpCircle, Globe } from 'lucide-react';
+import { DocumentType } from '../types';
 
 interface StatusBarProps {
   content: string;
@@ -42,10 +34,10 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   onCheckUpdates,
 }) => {
   const stats = useMemo(() => {
-    if (fileType === "pdf") {
+    if (fileType === 'pdf') {
       return null;
     }
-    const clean = content.replace(/[#*`_~[\]()]/g, "");
+    const clean = content.replace(/[#*`_~[\]()]/g, '');
     const words = clean.trim() ? clean.trim().split(/\s+/).length : 0;
     const chars = content.length;
     const readMinutes = Math.max(1, Math.ceil(words / 200));
@@ -53,23 +45,21 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   }, [content, fileType]);
 
   return (
-    <footer className="h-7 w-full flex items-center justify-between px-3 bg-fluent-card-light/60 dark:bg-fluent-card-dark/60 border-t border-fluent-border-light dark:border-fluent-border-dark select-none text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark shrink-0">
+    <footer className="flex h-7 w-full shrink-0 select-none items-center justify-between border-t border-fluent-border-light bg-fluent-card-light/60 px-3 text-[11px] text-fluent-text-secondaryLight dark:border-fluent-border-dark dark:bg-fluent-card-dark/60 dark:text-fluent-text-secondaryDark">
       {/* Left: File info / stats */}
       <div className="flex items-center gap-4 truncate">
-        <span className="truncate max-w-xs opacity-75">
-          {filePath || "Untitled"}
-        </span>
+        <span className="max-w-xs truncate opacity-75">{filePath || 'Untitled'}</span>
 
         {stats ? (
-          <div className="hidden sm:flex items-center gap-3 opacity-90">
+          <div className="hidden items-center gap-3 opacity-90 sm:flex">
             <span>{stats.words.toLocaleString()} words</span>
             <span>•</span>
             <span>{stats.chars.toLocaleString()} chars</span>
             <span>•</span>
             <span>~{stats.readMinutes} min read</span>
           </div>
-        ) : fileType === "pdf" ? (
-          <div className="hidden sm:flex items-center gap-3 opacity-90">
+        ) : fileType === 'pdf' ? (
+          <div className="hidden items-center gap-3 opacity-90 sm:flex">
             <span>{highlightCount} Highlights</span>
             <span>•</span>
             <span>{commentCount} Notes</span>
@@ -79,25 +69,25 @@ export const StatusBar: React.FC<StatusBarProps> = ({
 
       {/* Right: Actions & Zoom */}
       <div className="flex items-center gap-1">
-        {fileType === "markdown" || fileType === "text" ? (
+        {fileType === 'markdown' || fileType === 'text' ? (
           <button
             onClick={onOpenSearch}
             title="Search in document (Ctrl+F)"
-            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 mr-2"
+            className="mr-2 flex items-center gap-1 rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
           >
-            <Search className="w-3 h-3 text-fluent-accent" />
+            <Search className="h-3 w-3 text-fluent-accent" />
             <span className="hidden md:inline">Find</span>
           </button>
         ) : null}
 
-        {fileType === "markdown" && (
+        {fileType === 'markdown' && (
           <>
             <button
               onClick={onExportPDF}
               title="Export as PDF"
-              className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 mr-1"
+              className="mr-1 flex items-center gap-1 rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
             >
-              <FileDown className="w-3 h-3" />
+              <FileDown className="h-3 w-3" />
               <span className="hidden md:inline">PDF</span>
             </button>
 
@@ -105,9 +95,9 @@ export const StatusBar: React.FC<StatusBarProps> = ({
               <button
                 onClick={onExportHTML}
                 title="Export as Standalone HTML file"
-                className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 mr-2"
+                className="mr-2 flex items-center gap-1 rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
               >
-                <Globe className="w-3 h-3 text-fluent-accent" />
+                <Globe className="h-3 w-3 text-fluent-accent" />
                 <span className="hidden md:inline">HTML</span>
               </button>
             )}
@@ -118,27 +108,27 @@ export const StatusBar: React.FC<StatusBarProps> = ({
           <button
             onClick={onCheckUpdates}
             title="Check for updates"
-            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 mr-1 text-[10px]"
+            className="mr-1 flex items-center gap-1 rounded p-1 text-[10px] transition-colors hover:bg-black/5 dark:hover:bg-white/10"
           >
-            <ArrowUpCircle className="w-3 h-3 text-emerald-500" />
+            <ArrowUpCircle className="h-3 w-3 text-emerald-500" />
             <span className="hidden lg:inline">v1.0.0</span>
           </button>
         )}
 
-        <div className="w-[1px] h-3 bg-fluent-border-light dark:border-fluent-border-dark mx-1" />
+        <div className="mx-1 h-3 w-[1px] bg-fluent-border-light dark:border-fluent-border-dark" />
 
         <button
           onClick={onZoomOut}
           title="Zoom Out (Ctrl -)"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <ZoomOut className="w-3 h-3" />
+          <ZoomOut className="h-3 w-3" />
         </button>
 
         <button
           onClick={onZoomReset}
           title="Reset Zoom (Ctrl 0)"
-          className="px-1.5 py-0.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-mono"
+          className="rounded px-1.5 py-0.5 font-mono transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
           {Math.round(zoom * 100)}%
         </button>
@@ -146,9 +136,9 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         <button
           onClick={onZoomIn}
           title="Zoom In (Ctrl +)"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <ZoomIn className="w-3 h-3" />
+          <ZoomIn className="h-3 w-3" />
         </button>
       </div>
     </footer>

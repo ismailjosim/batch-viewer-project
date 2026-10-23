@@ -19,7 +19,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # OS and Editor files
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.suo
 *.ntvs*

@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { ListTree, ChevronRight } from "lucide-react";
+import React, { useMemo } from 'react';
+import { ListTree, ChevronRight } from 'lucide-react';
 
 interface HeadingItem {
   id: string;
@@ -21,18 +21,18 @@ export const OutlineSidebar: React.FC<OutlineSidebarProps> = ({
   onSelectHeading,
 }) => {
   const headings = useMemo<HeadingItem[]>(() => {
-    const lines = content.split("\n");
+    const lines = content.split('\n');
     const items: HeadingItem[] = [];
 
     lines.forEach((line) => {
       const match = line.match(/^(#{1,6})\s+(.+)$/);
       if (match) {
         const level = match[1].length;
-        const text = match[2].trim().replace(/[*_`]/g, "");
+        const text = match[2].trim().replace(/[*_`]/g, '');
         const id = text
           .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-");
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '-');
 
         items.push({ id, text, level });
       }
@@ -46,32 +46,32 @@ export const OutlineSidebar: React.FC<OutlineSidebarProps> = ({
       <button
         onClick={onToggle}
         title="Open Outline (Table of Contents)"
-        className="fixed bottom-4 left-4 p-2.5 rounded-full bg-fluent-card-light dark:bg-fluent-card-dark border border-fluent-border-light dark:border-fluent-border-dark shadow-lg hover:bg-black/5 dark:hover:bg-white/10 z-40 transition-transform hover:scale-105"
+        className="fixed bottom-4 left-4 z-40 rounded-full border border-fluent-border-light bg-fluent-card-light p-2.5 shadow-lg transition-transform hover:scale-105 hover:bg-black/5 dark:border-fluent-border-dark dark:bg-fluent-card-dark dark:hover:bg-white/10"
       >
-        <ListTree className="w-4 h-4 text-fluent-accent" />
+        <ListTree className="h-4 w-4 text-fluent-accent" />
       </button>
     );
   }
 
   return (
-    <aside className="w-64 h-full flex flex-col border-r border-fluent-border-light dark:border-fluent-border-dark bg-fluent-card-light/50 dark:bg-fluent-card-dark/50 backdrop-blur-md select-none shrink-0 transition-all duration-200">
-      <div className="flex items-center justify-between p-3 border-b border-fluent-border-light dark:border-fluent-border-dark">
-        <div className="flex items-center gap-2 font-semibold text-xs tracking-wide uppercase opacity-75">
-          <ListTree className="w-3.5 h-3.5 text-fluent-accent" />
+    <aside className="flex h-full w-64 shrink-0 select-none flex-col border-r border-fluent-border-light bg-fluent-card-light/50 backdrop-blur-md transition-all duration-200 dark:border-fluent-border-dark dark:bg-fluent-card-dark/50">
+      <div className="flex items-center justify-between border-b border-fluent-border-light p-3 dark:border-fluent-border-dark">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide opacity-75">
+          <ListTree className="h-3.5 w-3.5 text-fluent-accent" />
           <span>Outline</span>
         </div>
         <button
           onClick={onToggle}
           title="Collapse Outline"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <ChevronRight className="w-3.5 h-3.5 rotate-180" />
+          <ChevronRight className="h-3.5 w-3.5 rotate-180" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+      <div className="flex-1 space-y-0.5 overflow-y-auto p-2">
         {headings.length === 0 ? (
-          <div className="text-center py-8 text-xs opacity-50 italic">
+          <div className="py-8 text-center text-xs italic opacity-50">
             No headings found in document
           </div>
         ) : (
@@ -80,12 +80,10 @@ export const OutlineSidebar: React.FC<OutlineSidebarProps> = ({
               key={`${heading.id}-${idx}`}
               onClick={() => onSelectHeading(heading.id)}
               style={{ paddingLeft: `${(heading.level - 1) * 12 + 8}px` }}
-              className="w-full text-left py-1 px-2 rounded text-xs hover:bg-fluent-accent/10 hover:text-fluent-accent truncate transition-colors text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+              className="w-full truncate rounded px-2 py-1 text-left text-xs text-fluent-text-secondaryLight transition-colors hover:bg-fluent-accent/10 hover:text-fluent-accent dark:text-fluent-text-secondaryDark"
               title={heading.text}
             >
-              <span className="opacity-40 mr-1.5 font-mono text-[10px]">
-                H{heading.level}
-              </span>
+              <span className="mr-1.5 font-mono text-[10px] opacity-40">H{heading.level}</span>
               {heading.text}
             </button>
           ))

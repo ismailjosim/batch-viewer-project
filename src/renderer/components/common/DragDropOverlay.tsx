@@ -1,24 +1,17 @@
-import React from "react";
+import React from 'react';
 
 interface DragDropOverlayProps {
   isDragging: boolean;
 }
 
-export const DragDropOverlay: React.FC<DragDropOverlayProps> = ({
-  isDragging,
-}) => {
+export const DragDropOverlay: React.FC<DragDropOverlayProps> = ({ isDragging }) => {
   if (!isDragging) return null;
 
   return (
-    <div className="absolute inset-0 bg-fluent-accent/20 backdrop-blur-sm border-2 border-dashed border-fluent-accent z-50 flex items-center justify-center pointer-events-none animate-in fade-in select-none">
-      <div className="bg-fluent-card-light dark:bg-fluent-card-dark p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-3 border border-fluent-border-light dark:border-fluent-border-dark">
-        <div className="w-12 h-12 rounded-full bg-fluent-accent text-white flex items-center justify-center animate-bounce shadow-lg">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+    <div className="animate-in fade-in pointer-events-none absolute inset-0 z-50 flex select-none items-center justify-center border-2 border-dashed border-fluent-accent bg-fluent-accent/20 backdrop-blur-sm">
+      <div className="flex flex-col items-center gap-3 rounded-2xl border border-fluent-border-light bg-fluent-card-light p-6 shadow-2xl dark:border-fluent-border-dark dark:bg-fluent-card-dark">
+        <div className="flex h-12 w-12 animate-bounce items-center justify-center rounded-full bg-fluent-accent text-white shadow-lg">
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -27,10 +20,8 @@ export const DragDropOverlay: React.FC<DragDropOverlayProps> = ({
             />
           </svg>
         </div>
-        <p className="font-semibold text-sm">Drop document(s) to open</p>
-        <p className="text-xs opacity-60">
-          Supports .md, .pdf, .docx, .txt, .log
-        </p>
+        <p className="text-sm font-semibold">Drop document(s) to open</p>
+        <p className="text-xs opacity-60">Supports .md, .pdf, .docx, .txt, .log</p>
       </div>
     </div>
   );

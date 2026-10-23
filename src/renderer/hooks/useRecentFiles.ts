@@ -28,7 +28,7 @@ export function useRecentFiles() {
       ].slice(0, 30);
       try {
         localStorage.setItem(RECENT_FILES_STORAGE_KEY, JSON.stringify(updated));
-      } catch { }
+      } catch {}
       return updated;
     });
   }, []);
@@ -39,7 +39,7 @@ export function useRecentFiles() {
       const updated = prev.filter((f) => f.filePath !== filePath);
       try {
         localStorage.setItem(RECENT_FILES_STORAGE_KEY, JSON.stringify(updated));
-      } catch { }
+      } catch {}
       return updated;
     });
   }, []);
@@ -48,7 +48,7 @@ export function useRecentFiles() {
     setRecentFiles([]);
     try {
       localStorage.removeItem(RECENT_FILES_STORAGE_KEY);
-    } catch { }
+    } catch {}
   }, []);
 
   return {

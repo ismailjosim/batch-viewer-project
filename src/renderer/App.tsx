@@ -168,7 +168,8 @@ export const App: React.FC = () => {
     onNewTab: handleNewTab,
     onCloseTab: handleCloseTab,
     onSelectTab: setActiveTabId,
-    onToggleViewMode: () => setViewMode((m) => (m === 'view' ? 'split' : m === 'split' ? 'edit' : 'view')),
+    onToggleViewMode: () =>
+      setViewMode((m) => (m === 'view' ? 'split' : m === 'split' ? 'edit' : 'view')),
     onOpenSearch: () => setIsSearchOpen(true),
     onZoomIn: () => updateZoom(0.1),
     onZoomOut: () => updateZoom(-0.1),
@@ -181,7 +182,7 @@ export const App: React.FC = () => {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className="h-screen w-screen flex flex-col overflow-hidden bg-fluent-bg-light dark:bg-fluent-bg-dark text-fluent-text-primaryLight dark:text-fluent-text-primaryDark relative font-sans antialiased"
+      className="relative flex h-screen w-screen flex-col overflow-hidden bg-fluent-bg-light font-sans text-fluent-text-primaryLight antialiased dark:bg-fluent-bg-dark dark:text-fluent-text-primaryDark"
     >
       {/* 1. TitleBar */}
       <TitleBar
@@ -213,14 +214,16 @@ export const App: React.FC = () => {
       />
 
       {/* 3. Main Workspace Area */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="relative flex flex-1 overflow-hidden">
         {!isOverviewActive && (
           <Sidebar
             isOpen={isSidebarOpen}
             onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
             content={activeTab?.content || ''}
             isMarkdown={activeTab?.fileType === 'markdown'}
-            onSelectHeading={(id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
+            onSelectHeading={(id) =>
+              document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+            }
             workspaceFolder={workspaceFolder}
             activeFilePath={activeTab?.filePath || null}
             recentFiles={recentFiles}
@@ -230,7 +233,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
           <DocumentContentArea
             isOverviewActive={isOverviewActive}
             activeTab={activeTab}
@@ -261,7 +264,13 @@ export const App: React.FC = () => {
         content={isOverviewActive ? '' : activeTab?.content || ''}
         fileType={isOverviewActive ? 'markdown' : activeTab?.fileType || 'markdown'}
         zoom={zoom}
-        filePath={isOverviewActive ? (recentFiles.length > 0 ? `${recentFiles.length} Recent Documents` : 'Batch-Viewer Ready') : activeTab?.filePath || activeTab?.fileName || 'Untitled'}
+        filePath={
+          isOverviewActive
+            ? recentFiles.length > 0
+              ? `${recentFiles.length} Recent Documents`
+              : 'Batch-Viewer Ready'
+            : activeTab?.filePath || activeTab?.fileName || 'Untitled'
+        }
         highlightCount={activeTab?.pdfHighlights?.length || 0}
         commentCount={activeTab?.pdfComments?.length || 0}
         onZoomIn={() => updateZoom(0.1)}
@@ -277,7 +286,9 @@ export const App: React.FC = () => {
       />
 
       {/* Search Bar Modal */}
-      {!isOverviewActive && <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+      {!isOverviewActive && (
+        <SearchBar isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      )}
 
       {/* Drag & Drop Visual Indicator */}
       <DragDropOverlay isDragging={isDragging} />

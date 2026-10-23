@@ -19,20 +19,23 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
   const zoom = activeTab?.zoom || 1.0;
 
   // Update content of active tab
-  const handleContentChange = useCallback((newContent: string) => {
-    setTabs((prev) =>
-      prev.map((t) => {
-        if (t.id === activeTabId) {
-          return {
-            ...t,
-            content: newContent,
-            isDirty: newContent !== t.originalContent,
-          };
-        }
-        return t;
-      })
-    );
-  }, [activeTabId]);
+  const handleContentChange = useCallback(
+    (newContent: string) => {
+      setTabs((prev) =>
+        prev.map((t) => {
+          if (t.id === activeTabId) {
+            return {
+              ...t,
+              content: newContent,
+              isDirty: newContent !== t.originalContent,
+            };
+          }
+          return t;
+        })
+      );
+    },
+    [activeTabId]
+  );
 
   // Update PDF annotations of active tab
   const handlePdfAnnotationsChange = useCallback(
@@ -61,7 +64,9 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
       const normalizedPath = path.toLowerCase();
 
       // Check if already open
-      const existing = tabsRef.current.find((t) => t.filePath && t.filePath.toLowerCase() === normalizedPath);
+      const existing = tabsRef.current.find(
+        (t) => t.filePath && t.filePath.toLowerCase() === normalizedPath
+      );
       if (existing) {
         setActiveTabId(existing.id);
         return;
@@ -301,9 +306,7 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
   };
 
   const resetZoom = () => {
-    setTabs((prev) =>
-      prev.map((t) => (t.id === activeTabId ? { ...t, zoom: 1.0 } : t))
-    );
+    setTabs((prev) => prev.map((t) => (t.id === activeTabId ? { ...t, zoom: 1.0 } : t)));
   };
 
   return {

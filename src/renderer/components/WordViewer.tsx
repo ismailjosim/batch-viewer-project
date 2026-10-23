@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
-import mammoth from "mammoth";
-import DOMPurify from "dompurify";
-import { FileDown, Edit3, Eye } from "lucide-react";
+import React, { useEffect, useState, useRef } from 'react';
+import mammoth from 'mammoth';
+import DOMPurify from 'dompurify';
+import { FileDown, Edit3, Eye } from 'lucide-react';
 
 interface WordViewerProps {
   base64Data?: string;
@@ -21,7 +21,7 @@ export const WordViewer: React.FC<WordViewerProps> = ({
   onSaveAsPdf,
 }) => {
   const [htmlContent, setHtmlContent] = useState<string>(() =>
-    initialHtml ? DOMPurify.sanitize(initialHtml) : "",
+    initialHtml ? DOMPurify.sanitize(initialHtml) : ''
   );
   const [loading, setLoading] = useState<boolean>(!initialHtml && !!base64Data);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +54,8 @@ export const WordViewer: React.FC<WordViewerProps> = ({
         });
         if (isMounted) {
           const sanitizedHtml = DOMPurify.sanitize(result.value, {
-            ADD_TAGS: ["table", "thead", "tbody", "tr", "td", "th"],
-            ADD_ATTR: ["style", "class", "colspan", "rowspan"],
+            ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'td', 'th'],
+            ADD_ATTR: ['style', 'class', 'colspan', 'rowspan'],
           });
           setHtmlContent(sanitizedHtml);
           onContentChange(sanitizedHtml);
@@ -84,56 +84,50 @@ export const WordViewer: React.FC<WordViewerProps> = ({
   };
 
   return (
-    <div className="flex-1 h-full flex flex-col bg-[#eef1f5] dark:bg-[#1a1c23] overflow-hidden select-text">
+    <div className="flex h-full flex-1 select-text flex-col overflow-hidden bg-[#eef1f5] dark:bg-[#1a1c23]">
       {/* Word Controls Toolbar */}
-      <div className="h-10 px-4 flex items-center justify-between bg-fluent-card-light/90 dark:bg-fluent-card-dark/90 border-b border-fluent-border-light dark:border-fluent-border-dark select-none text-xs shrink-0 z-10 shadow-sm">
+      <div className="z-10 flex h-10 shrink-0 select-none items-center justify-between border-b border-fluent-border-light bg-fluent-card-light/90 px-4 text-xs shadow-sm dark:border-fluent-border-dark dark:bg-fluent-card-dark/90">
         <div className="flex items-center gap-2">
-          <span className="font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+          <span className="rounded bg-blue-500/10 px-2 py-0.5 font-semibold text-blue-600 dark:text-blue-400">
             Word / Docs
           </span>
-          <span className="opacity-75 font-medium truncate max-w-xs">
-            {fileName}
-          </span>
+          <span className="max-w-xs truncate font-medium opacity-75">{fileName}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsEditable(!isEditable)}
-            title={isEditable ? "Switch to Reader Mode" : "Switch to Edit Mode"}
-            className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-all ${
+            title={isEditable ? 'Switch to Reader Mode' : 'Switch to Edit Mode'}
+            className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
               isEditable
-                ? "bg-fluent-accent text-white shadow-sm"
-                : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
+                ? 'bg-fluent-accent text-white shadow-sm'
+                : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
             }`}
           >
-            {isEditable ? (
-              <Eye className="w-3.5 h-3.5" />
-            ) : (
-              <Edit3 className="w-3.5 h-3.5" />
-            )}
-            <span>{isEditable ? "Reading View" : "Edit Document"}</span>
+            {isEditable ? <Eye className="h-3.5 w-3.5" /> : <Edit3 className="h-3.5 w-3.5" />}
+            <span>{isEditable ? 'Reading View' : 'Edit Document'}</span>
           </button>
 
           <button
             onClick={onSaveAsPdf}
             title="Export as PDF"
-            className="px-2.5 py-1 rounded bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors flex items-center gap-1.5"
+            className="flex items-center gap-1.5 rounded bg-black/5 px-2.5 py-1 transition-colors hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20"
           >
-            <FileDown className="w-3.5 h-3.5 text-fluent-accent" />
+            <FileDown className="h-3.5 w-3.5 text-fluent-accent" />
             <span>Save as PDF</span>
           </button>
         </div>
       </div>
 
       {/* Main Document Content Scroll View */}
-      <div className="flex-1 overflow-y-auto p-8 flex justify-center">
+      <div className="flex flex-1 justify-center overflow-y-auto p-8">
         {loading ? (
-          <div className="flex flex-col items-center justify-center my-auto text-sm opacity-60 gap-3">
-            <div className="w-7 h-7 border-3 border-fluent-accent border-t-transparent rounded-full animate-spin" />
+          <div className="my-auto flex flex-col items-center justify-center gap-3 text-sm opacity-60">
+            <div className="border-3 h-7 w-7 animate-spin rounded-full border-fluent-accent border-t-transparent" />
             <span>Rendering Word document...</span>
           </div>
         ) : error ? (
-          <div className="max-w-md p-6 bg-red-500/10 border border-red-500/30 rounded-xl text-red-500 text-sm my-auto text-center">
+          <div className="my-auto max-w-md rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center text-sm text-red-500">
             {error}
           </div>
         ) : (
@@ -141,9 +135,9 @@ export const WordViewer: React.FC<WordViewerProps> = ({
           <div
             style={{
               transform: `scale(${zoom})`,
-              transformOrigin: "top center",
+              transformOrigin: 'top center',
             }}
-            className="transition-transform duration-150 mb-12"
+            className="mb-12 transition-transform duration-150"
           >
             <div
               ref={editorRef}
@@ -151,14 +145,14 @@ export const WordViewer: React.FC<WordViewerProps> = ({
               onInput={handleInput}
               suppressContentEditableWarning={true}
               style={{
-                width: "800px",
-                minHeight: "1100px",
+                width: '800px',
+                minHeight: '1100px',
               }}
-              className={`p-16 bg-white dark:bg-[#20222a] text-[#1c1d1f] dark:text-[#f0f0f2] shadow-2xl rounded-sm border border-black/10 dark:border-white/10 outline-none font-serif leading-relaxed text-base transition-shadow ${
-                isEditable ? "ring-2 ring-fluent-accent/50 cursor-text" : ""
-              } prose dark:prose-invert max-w-none prose-headings:font-sans prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:my-3 prose-table:border-collapse prose-td:border prose-td:p-2 prose-th:border prose-th:p-2 prose-th:bg-black/5 dark:prose-th:bg-white/5`}
+              className={`rounded-sm border border-black/10 bg-white p-16 font-serif text-base leading-relaxed text-[#1c1d1f] shadow-2xl outline-none transition-shadow dark:border-white/10 dark:bg-[#20222a] dark:text-[#f0f0f2] ${
+                isEditable ? 'cursor-text ring-2 ring-fluent-accent/50' : ''
+              } prose dark:prose-invert prose-headings:font-sans prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:my-3 prose-table:border-collapse prose-td:border prose-td:p-2 prose-th:border prose-th:p-2 prose-th:bg-black/5 dark:prose-th:bg-white/5 max-w-none`}
               dangerouslySetInnerHTML={{
-                __html: htmlContent || "<p>Empty document</p>",
+                __html: htmlContent || '<p>Empty document</p>',
               }}
             />
           </div>

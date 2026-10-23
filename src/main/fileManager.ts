@@ -14,6 +14,10 @@ export function closeWatcher() {
   currentWatchedFile = null;
 }
 
+export function getCurrentWatchedFile(): string | null {
+  return currentWatchedFile;
+}
+
 function isValidPath(filePath: unknown): filePath is string {
   return typeof filePath === 'string' && filePath.trim().length > 0 && !filePath.includes('\0');
 }
@@ -21,7 +25,20 @@ function isValidPath(filePath: unknown): filePath is string {
 async function scanDirectoryFiles(dirPath: string) {
   try {
     const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
-    const supportedExts = new Set(['.md', '.markdown', '.mdown', '.mkd', '.mdx', '.pdf', '.docx', '.doc', '.txt', '.log', '.json', '.csv']);
+    const supportedExts = new Set([
+      '.md',
+      '.markdown',
+      '.mdown',
+      '.mkd',
+      '.mdx',
+      '.pdf',
+      '.docx',
+      '.doc',
+      '.txt',
+      '.log',
+      '.json',
+      '.csv',
+    ]);
     const files: Array<{ name: string; path: string; size: number }> = [];
 
     for (const entry of entries) {
@@ -36,7 +53,7 @@ async function scanDirectoryFiles(dirPath: string) {
           try {
             const stat = await fs.promises.stat(fullPath);
             size = stat.size;
-          } catch { }
+          } catch {}
           files.push({ name: entry.name, path: fullPath, size });
         }
       }
@@ -57,11 +74,33 @@ export function registerFileIpcHandlers() {
       title: 'Open Document(s)',
       properties: ['openFile', 'multiSelections'],
       filters: [
-        { name: 'All Supported Documents', extensions: ['md', 'markdown', 'mdown', 'mkd', 'mdx', 'txt', 'log', 'pdf', 'docx', 'doc', 'json', 'csv'] },
-        { name: 'Markdown Documents (*.md)', extensions: ['md', 'markdown', 'mdown', 'mkd', 'mdx'] },
+        {
+          name: 'All Supported Documents',
+          extensions: [
+            'md',
+            'markdown',
+            'mdown',
+            'mkd',
+            'mdx',
+            'txt',
+            'log',
+            'pdf',
+            'docx',
+            'doc',
+            'json',
+            'csv',
+          ],
+        },
+        {
+          name: 'Markdown Documents (*.md)',
+          extensions: ['md', 'markdown', 'mdown', 'mkd', 'mdx'],
+        },
         { name: 'PDF Documents (*.pdf)', extensions: ['pdf'] },
         { name: 'Word Documents (*.docx)', extensions: ['docx', 'doc'] },
-        { name: 'Text & Log Files (*.txt, *.log)', extensions: ['txt', 'log', 'json', 'csv', 'yaml', 'yml'] },
+        {
+          name: 'Text & Log Files (*.txt, *.log)',
+          extensions: ['txt', 'log', 'json', 'csv', 'yaml', 'yml'],
+        },
         { name: 'All Files (*.*)', extensions: ['*'] },
       ],
     });
@@ -274,27 +313,30 @@ export function registerFileIpcHandlers() {
   });
 
   // Export to HTML
-  ipcMain.handle('file:export-html', async (_event, defaultName = 'Document.html', htmlContent: string) => {
-    const win = getMainWindow();
-    if (!win) return { success: false, error: 'No active window' };
+  ipcMain.handle(
+    'file:export-html',
+    async (_event, defaultName = 'Document.html', htmlContent: string) => {
+      const win = getMainWindow();
+      if (!win) return { success: false, error: 'No active window' };
 
-    const saveResult = await dialog.showSaveDialog(win, {
-      title: 'Export Document to HTML',
-      defaultPath: defaultName,
-      filters: [{ name: 'HTML Document (*.html)', extensions: ['html'] }],
-    });
+      const saveResult = await dialog.showSaveDialog(win, {
+        title: 'Export Document to HTML',
+        defaultPath: defaultName,
+        filters: [{ name: 'HTML Document (*.html)', extensions: ['html'] }],
+      });
 
-    if (saveResult.canceled || !saveResult.filePath) {
-      return { success: false, canceled: true };
+      if (saveResult.canceled || !saveResult.filePath) {
+        return { success: false, canceled: true };
+      }
+
+      try {
+        await fs.promises.writeFile(saveResult.filePath, htmlContent, 'utf-8');
+        return { success: true, path: saveResult.filePath };
+      } catch (err: any) {
+        return { success: false, error: err.message };
+      }
     }
-
-    try {
-      await fs.promises.writeFile(saveResult.filePath, htmlContent, 'utf-8');
-      return { success: true, path: saveResult.filePath };
-    } catch (err: any) {
-      return { success: false, error: err.message };
-    }
-  });
+  );
 
   // Shell Helpers
   ipcMain.handle('shell:show-in-folder', async (_event, filePath: string) => {
@@ -312,6 +354,6 @@ export function registerFileIpcHandlers() {
       if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
         await shell.openExternal(url);
       }
-    } catch { }
+    } catch {}
   });
 }

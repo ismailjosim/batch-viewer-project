@@ -36,19 +36,37 @@ export interface ElectronAPI {
 
   // File IO
   openFileDialog: () => Promise<string[] | null>;
-  openDirectoryDialog: () => Promise<{ dirPath: string; folderName?: string; files: FolderFileEntry[]; error?: string } | null>;
-  openDirectoryPath: (dirPath: string) => Promise<{ dirPath: string; folderName?: string; files: FolderFileEntry[]; error?: string } | null>;
-  getPathInfo: (filePath: string) => Promise<{ exists: boolean; isDirectory: boolean; isFile: boolean }>;
+  openDirectoryDialog: () => Promise<{
+    dirPath: string;
+    folderName?: string;
+    files: FolderFileEntry[];
+    error?: string;
+  } | null>;
+  openDirectoryPath: (dirPath: string) => Promise<{
+    dirPath: string;
+    folderName?: string;
+    files: FolderFileEntry[];
+    error?: string;
+  } | null>;
+  getPathInfo: (
+    filePath: string
+  ) => Promise<{ exists: boolean; isDirectory: boolean; isFile: boolean }>;
   getPathForFile: (file: File) => string;
   readFile: (filePath: string) => Promise<FileData>;
   readBinaryFile: (filePath: string) => Promise<BinaryFileData>;
   saveFile: (filePath: string, content: string) => Promise<{ success: boolean; error?: string }>;
-  saveBinaryFile: (filePath: string, base64: string) => Promise<{ success: boolean; error?: string }>;
+  saveBinaryFile: (
+    filePath: string,
+    base64: string
+  ) => Promise<{ success: boolean; error?: string }>;
   saveFileDialog: (defaultName?: string) => Promise<string | null>;
   watchFile: (filePath: string) => Promise<boolean>;
   unwatchFile: () => Promise<boolean>;
   exportPDF: () => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: string }>;
-  exportHTML: (defaultName: string, htmlContent: string) => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: string }>;
+  exportHTML: (
+    defaultName: string,
+    htmlContent: string
+  ) => Promise<{ success: boolean; path?: string; canceled?: boolean; error?: string }>;
   getInitialFiles: () => Promise<string[]>;
   showInFolder: (filePath: string) => Promise<boolean>;
   openExternal: (url: string) => Promise<void>;
@@ -65,7 +83,8 @@ const api: ElectronAPI = {
   close: () => ipcRenderer.invoke('window:close'),
   isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
   onWindowStateChanged: (callback) => {
-    const subscription = (_event: any, data: { isMaximized: boolean }) => callback(data.isMaximized);
+    const subscription = (_event: any, data: { isMaximized: boolean }) =>
+      callback(data.isMaximized);
     ipcRenderer.on('window:state-changed', subscription);
     return () => ipcRenderer.removeListener('window:state-changed', subscription);
   },
@@ -83,13 +102,16 @@ const api: ElectronAPI = {
   },
   readFile: (filePath: string) => ipcRenderer.invoke('file:read', filePath),
   readBinaryFile: (filePath: string) => ipcRenderer.invoke('file:read-binary', filePath),
-  saveFile: (filePath: string, content: string) => ipcRenderer.invoke('file:save', filePath, content),
-  saveBinaryFile: (filePath: string, base64: string) => ipcRenderer.invoke('file:save-binary', filePath, base64),
+  saveFile: (filePath: string, content: string) =>
+    ipcRenderer.invoke('file:save', filePath, content),
+  saveBinaryFile: (filePath: string, base64: string) =>
+    ipcRenderer.invoke('file:save-binary', filePath, base64),
   saveFileDialog: (defaultName?: string) => ipcRenderer.invoke('file:save-dialog', defaultName),
   watchFile: (filePath: string) => ipcRenderer.invoke('file:watch', filePath),
   unwatchFile: () => ipcRenderer.invoke('file:unwatch'),
   exportPDF: () => ipcRenderer.invoke('file:export-pdf'),
-  exportHTML: (defaultName: string, htmlContent: string) => ipcRenderer.invoke('file:export-html', defaultName, htmlContent),
+  exportHTML: (defaultName: string, htmlContent: string) =>
+    ipcRenderer.invoke('file:export-html', defaultName, htmlContent),
   getInitialFiles: () => ipcRenderer.invoke('file:get-initial-files'),
   showInFolder: (filePath: string) => ipcRenderer.invoke('shell:show-in-folder', filePath),
   openExternal: (url: string) => ipcRenderer.invoke('shell:open-external', url),
@@ -108,7 +130,7 @@ const api: ElectronAPI = {
     const subscription = (_event: any, filePath: string) => callback(filePath);
     ipcRenderer.on('file:changed-on-disk', subscription);
     return () => ipcRenderer.removeListener('file:changed-on-disk', subscription);
-  }
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
-  FileText,
   Sun,
   Moon,
   Minus,
@@ -13,21 +12,21 @@ import {
   Eye,
   Columns,
   Edit3,
-} from "lucide-react";
-import { DocumentType } from "../types";
-import appLogo from "../assets/logo.png";
+} from 'lucide-react';
+import { DocumentType } from '../types';
+import appLogo from '../assets/logo.png';
 
 interface TitleBarProps {
   fileName: string | null;
   fileType?: DocumentType;
   isDirty: boolean;
-  theme: "light" | "dark";
-  viewMode: "view" | "split" | "edit";
+  theme: 'light' | 'dark';
+  viewMode: 'view' | 'split' | 'edit';
   onToggleTheme: () => void;
   onOpenFile: () => void;
   onSaveFile: () => void;
   onNewFile: () => void;
-  onViewModeChange: (mode: "view" | "split" | "edit") => void;
+  onViewModeChange: (mode: 'view' | 'split' | 'edit') => void;
   onGoHome?: () => void;
 }
 
@@ -62,131 +61,121 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   const handleClose = () => window.api?.close();
 
   return (
-    <div className="h-10 w-full flex items-center justify-between bg-fluent-card-light/80 dark:bg-fluent-card-dark/80 backdrop-blur-md border-b border-fluent-border-light dark:border-fluent-border-dark select-none z-50 text-xs app-region-drag">
+    <div className="app-region-drag z-50 flex h-10 w-full select-none items-center justify-between border-b border-fluent-border-light bg-fluent-card-light/80 text-xs backdrop-blur-md dark:border-fluent-border-dark dark:bg-fluent-card-dark/80">
       {/* Left: App icon & File actions */}
-      <div className="flex items-center gap-1 px-3 app-region-no-drag">
+      <div className="app-region-no-drag flex items-center gap-1 px-3">
         <div
           onClick={onGoHome}
           title="Overview & Recent Documents"
-          className="flex items-center gap-2 mr-3 font-semibold text-fluent-accent cursor-pointer hover:opacity-80 transition-opacity"
+          className="mr-3 flex cursor-pointer items-center gap-2 font-semibold text-fluent-accent transition-opacity hover:opacity-80"
         >
-          <img
-            src={appLogo}
-            alt="Batch-Viewer"
-            className="w-4 h-4 rounded-full object-contain"
-          />
+          <img src={appLogo} alt="Batch-Viewer" className="h-4 w-4 rounded-full object-contain" />
           <span className="hidden sm:inline">Batch-Viewer</span>
         </div>
 
         <button
           onClick={onNewFile}
           title="New Document (Ctrl+N)"
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <FilePlus className="w-3.5 h-3.5" />
+          <FilePlus className="h-3.5 w-3.5" />
         </button>
 
         <button
           onClick={onOpenFile}
           title="Open Document(s) (Ctrl+O)"
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <FolderOpen className="w-3.5 h-3.5" />
+          <FolderOpen className="h-3.5 w-3.5" />
         </button>
 
         <button
           onClick={onSaveFile}
           title="Save File (Ctrl+S)"
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Save className="w-3.5 h-3.5" />
+          <Save className="h-3.5 w-3.5" />
         </button>
 
         {/* View mode toggle - shown for Markdown */}
-        {fileType === "markdown" && (
-          <div className="flex items-center bg-black/5 dark:bg-white/5 rounded p-0.5 ml-2 border border-fluent-border-light dark:border-fluent-border-dark">
+        {fileType === 'markdown' && (
+          <div className="ml-2 flex items-center rounded border border-fluent-border-light bg-black/5 p-0.5 dark:border-fluent-border-dark dark:bg-white/5">
             <button
-              onClick={() => onViewModeChange("view")}
+              onClick={() => onViewModeChange('view')}
               title="Read / View Mode"
-              className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === "view"
-                  ? "bg-fluent-accent text-white shadow-sm"
-                  : "hover:bg-black/5 dark:hover:bg-white/10"
+              className={`flex items-center gap-1 rounded px-2 py-1 transition-all ${
+                viewMode === 'view'
+                  ? 'bg-fluent-accent text-white shadow-sm'
+                  : 'hover:bg-black/5 dark:hover:bg-white/10'
               }`}
             >
-              <Eye className="w-3 h-3" />
-              <span className="hidden md:inline text-[11px]">View</span>
+              <Eye className="h-3 w-3" />
+              <span className="hidden text-[11px] md:inline">View</span>
             </button>
             <button
-              onClick={() => onViewModeChange("split")}
+              onClick={() => onViewModeChange('split')}
               title="Split View"
-              className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === "split"
-                  ? "bg-fluent-accent text-white shadow-sm"
-                  : "hover:bg-black/5 dark:hover:bg-white/10"
+              className={`flex items-center gap-1 rounded px-2 py-1 transition-all ${
+                viewMode === 'split'
+                  ? 'bg-fluent-accent text-white shadow-sm'
+                  : 'hover:bg-black/5 dark:hover:bg-white/10'
               }`}
             >
-              <Columns className="w-3 h-3" />
-              <span className="hidden md:inline text-[11px]">Split</span>
+              <Columns className="h-3 w-3" />
+              <span className="hidden text-[11px] md:inline">Split</span>
             </button>
             <button
-              onClick={() => onViewModeChange("edit")}
+              onClick={() => onViewModeChange('edit')}
               title="Edit Mode"
-              className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === "edit"
-                  ? "bg-fluent-accent text-white shadow-sm"
-                  : "hover:bg-black/5 dark:hover:bg-white/10"
+              className={`flex items-center gap-1 rounded px-2 py-1 transition-all ${
+                viewMode === 'edit'
+                  ? 'bg-fluent-accent text-white shadow-sm'
+                  : 'hover:bg-black/5 dark:hover:bg-white/10'
               }`}
             >
-              <Edit3 className="w-3 h-3" />
-              <span className="hidden md:inline text-[11px]">Edit</span>
+              <Edit3 className="h-3 w-3" />
+              <span className="hidden text-[11px] md:inline">Edit</span>
             </button>
           </div>
         )}
       </div>
 
       {/* Center: File Title */}
-      <div className="truncate max-w-[40%] text-center font-medium opacity-80 pointer-events-none">
-        {fileName || "Untitled"} {isDirty ? "•" : ""}
+      <div className="pointer-events-none max-w-[40%] truncate text-center font-medium opacity-80">
+        {fileName || 'Untitled'} {isDirty ? '•' : ''}
       </div>
 
       {/* Right: Theme switch & Windows 11 Titlebar controls */}
-      <div className="flex items-center app-region-no-drag h-full">
+      <div className="app-region-no-drag flex h-full items-center">
         <button
           onClick={onToggleTheme}
-          title={
-            theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
-          }
-          className="p-2 mr-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          className="mr-1 rounded p-2 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          {theme === "dark" ? (
-            <Sun className="w-3.5 h-3.5 text-amber-400" />
+          {theme === 'dark' ? (
+            <Sun className="h-3.5 w-3.5 text-amber-400" />
           ) : (
-            <Moon className="w-3.5 h-3.5" />
+            <Moon className="h-3.5 w-3.5" />
           )}
         </button>
 
         <button
           onClick={handleMinimize}
-          className="w-11 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="flex h-full w-11 items-center justify-center transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Minus className="w-3.5 h-3.5" />
+          <Minus className="h-3.5 w-3.5" />
         </button>
         <button
           onClick={handleMaximize}
-          className="w-11 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="flex h-full w-11 items-center justify-center transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          {isMaximized ? (
-            <Copy className="w-3 h-3 rotate-180" />
-          ) : (
-            <Square className="w-3 h-3" />
-          )}
+          {isMaximized ? <Copy className="h-3 w-3 rotate-180" /> : <Square className="h-3 w-3" />}
         </button>
         <button
           onClick={handleClose}
-          className="w-11 h-full flex items-center justify-center hover:bg-[#e81123] hover:text-white transition-colors"
+          className="flex h-full w-11 items-center justify-center transition-colors hover:bg-[#e81123] hover:text-white"
         >
-          <X className="w-4 h-4" />
+          <X className="h-4 w-4" />
         </button>
       </div>
     </div>

@@ -14,7 +14,10 @@ function extractFilePaths(argv: string[]): string[] {
   for (let i = 1; i < argv.length; i++) {
     const arg = argv[i];
     if (!arg || arg.startsWith('-')) continue;
-    if (!app.isPackaged && (arg.includes('vite') || arg.endsWith('electron.exe') || arg.endsWith('electron'))) {
+    if (
+      !app.isPackaged &&
+      (arg.includes('vite') || arg.endsWith('electron.exe') || arg.endsWith('electron'))
+    ) {
       continue;
     }
     if (fs.existsSync(arg)) {

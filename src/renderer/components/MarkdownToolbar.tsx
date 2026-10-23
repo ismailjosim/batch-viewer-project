@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Bold,
   Italic,
@@ -18,181 +18,173 @@ import {
   Minus,
   Sigma,
   GitFork,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface MarkdownToolbarProps {
   onInsert: (prefix: string, suffix?: string, defaultText?: string) => void;
 }
 
-export const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({
-  onInsert,
-}) => {
+export const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({ onInsert }) => {
   return (
-    <div className="h-9 px-3 flex items-center gap-0.5 bg-fluent-card-light/90 dark:bg-fluent-card-dark/90 border-b border-fluent-border-light dark:border-fluent-border-dark select-none text-xs overflow-x-auto shrink-0 scrollbar-none">
+    <div className="scrollbar-none flex h-9 shrink-0 select-none items-center gap-0.5 overflow-x-auto border-b border-fluent-border-light bg-fluent-card-light/90 px-3 text-xs dark:border-fluent-border-dark dark:bg-fluent-card-dark/90">
       {/* Headings */}
-      <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button
-          onClick={() => onInsert("# ", "", "Heading 1")}
+          onClick={() => onInsert('# ', '', 'Heading 1')}
           title="Heading 1"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Heading1 className="w-3.5 h-3.5" />
+          <Heading1 className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("## ", "", "Heading 2")}
+          onClick={() => onInsert('## ', '', 'Heading 2')}
           title="Heading 2"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Heading2 className="w-3.5 h-3.5" />
+          <Heading2 className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("### ", "", "Heading 3")}
+          onClick={() => onInsert('### ', '', 'Heading 3')}
           title="Heading 3"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Heading3 className="w-3.5 h-3.5" />
+          <Heading3 className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Basic Text Formatting */}
-      <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button
-          onClick={() => onInsert("**", "**", "bold text")}
+          onClick={() => onInsert('**', '**', 'bold text')}
           title="Bold (Ctrl+B)"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Bold className="w-3.5 h-3.5" />
+          <Bold className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("*", "*", "italic text")}
+          onClick={() => onInsert('*', '*', 'italic text')}
           title="Italic (Ctrl+I)"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Italic className="w-3.5 h-3.5" />
+          <Italic className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("~~", "~~", "strikethrough text")}
+          onClick={() => onInsert('~~', '~~', 'strikethrough text')}
           title="Strikethrough"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Strikethrough className="w-3.5 h-3.5" />
+          <Strikethrough className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Lists & Checklist */}
-      <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button
-          onClick={() => onInsert("- ", "", "List item")}
+          onClick={() => onInsert('- ', '', 'List item')}
           title="Bullet List"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <List className="w-3.5 h-3.5" />
+          <List className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("1. ", "", "Numbered item")}
+          onClick={() => onInsert('1. ', '', 'Numbered item')}
           title="Numbered List"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <ListOrdered className="w-3.5 h-3.5" />
+          <ListOrdered className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("- [ ] ", "", "Task item")}
+          onClick={() => onInsert('- [ ] ', '', 'Task item')}
           title="Task Checklist"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <CheckSquare className="w-3.5 h-3.5" />
+          <CheckSquare className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("> ", "", "Quote text")}
+          onClick={() => onInsert('> ', '', 'Quote text')}
           title="Blockquote"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Quote className="w-3.5 h-3.5" />
+          <Quote className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Code */}
-      <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button
-          onClick={() => onInsert("`", "`", "code")}
+          onClick={() => onInsert('`', '`', 'code')}
           title="Inline Code"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Code className="w-3.5 h-3.5" />
+          <Code className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() =>
-            onInsert("```typescript\n", "\n```", "// Your code here")
-          }
+          onClick={() => onInsert('```typescript\n', '\n```', '// Your code here')}
           title="Code Block"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <FileCode className="w-3.5 h-3.5" />
+          <FileCode className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Media & Links */}
-      <div className="flex items-center gap-0.5 mr-1 pr-1 border-r border-fluent-border-light dark:border-fluent-border-dark">
+      <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button
-          onClick={() => onInsert("[", "](https://example.com)", "Link text")}
+          onClick={() => onInsert('[', '](https://example.com)', 'Link text')}
           title="Hyperlink"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Link className="w-3.5 h-3.5" />
+          <Link className="h-3.5 w-3.5" />
         </button>
         <button
           onClick={() =>
-            onInsert(
-              "![",
-              "](https://via.placeholder.com/600x400)",
-              "Image alt description",
-            )
+            onInsert('![', '](https://via.placeholder.com/600x400)', 'Image alt description')
           }
           title="Image"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Image className="w-3.5 h-3.5" />
+          <Image className="h-3.5 w-3.5" />
         </button>
         <button
           onClick={() =>
             onInsert(
-              "| Header 1 | Header 2 | Header 3 |\n| :--- | :--- | :--- |\n| Item 1 | Item 2 | Item 3 |\n| Item 4 | Item 5 | Item 6 |\n",
+              '| Header 1 | Header 2 | Header 3 |\n| :--- | :--- | :--- |\n| Item 1 | Item 2 | Item 3 |\n| Item 4 | Item 5 | Item 6 |\n'
             )
           }
           title="Insert Table"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Table className="w-3.5 h-3.5" />
+          <Table className="h-3.5 w-3.5" />
         </button>
         <button
-          onClick={() => onInsert("\n---\n")}
+          onClick={() => onInsert('\n---\n')}
           title="Horizontal Divider"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Minus className="w-3.5 h-3.5" />
+          <Minus className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Advanced (Math & Mermaid) */}
       <div className="flex items-center gap-0.5">
         <button
-          onClick={() => onInsert("$$\n", "\n$$", "E = mc^2")}
+          onClick={() => onInsert('$$\n', '\n$$', 'E = mc^2')}
           title="LaTeX Math Formula"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 px-1.5 text-[11px]"
+          className="flex items-center gap-1 rounded p-1 px-1.5 text-[11px] transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <Sigma className="w-3.5 h-3.5 text-fluent-accent" />
+          <Sigma className="h-3.5 w-3.5 text-fluent-accent" />
           <span className="hidden xl:inline">Math</span>
         </button>
         <button
           onClick={() =>
             onInsert(
-              "```mermaid\nflowchart LR\n    A[Step 1] --> B[Step 2]\n    B --> C[Result]\n```\n",
+              '```mermaid\nflowchart LR\n    A[Step 1] --> B[Step 2]\n    B --> C[Result]\n```\n'
             )
           }
           title="Mermaid Diagram"
-          className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1 px-1.5 text-[11px]"
+          className="flex items-center gap-1 rounded p-1 px-1.5 text-[11px] transition-colors hover:bg-black/5 dark:hover:bg-white/10"
         >
-          <GitFork className="w-3.5 h-3.5 text-fluent-accent" />
+          <GitFork className="h-3.5 w-3.5 text-fluent-accent" />
           <span className="hidden xl:inline">Diagram</span>
         </button>
       </div>

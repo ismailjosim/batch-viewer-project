@@ -1,5 +1,5 @@
-@import "katex/dist/katex.min.css";
-@import "highlight.js/styles/github-dark.css";
+@import 'katex/dist/katex.min.css';
+@import 'highlight.js/styles/github-dark.css';
 
 @tailwind base;
 @tailwind components;
@@ -36,8 +36,8 @@
 /* Markdown typography styling */
 .markdown-body {
   font-family:
-    "Segoe UI Variable Text",
-    "Segoe UI",
+    'Segoe UI Variable Text',
+    'Segoe UI',
     system-ui,
     -apple-system,
     sans-serif;
@@ -134,7 +134,7 @@
   gap: 0.5em;
 }
 
-.markdown-body .task-list-item input[type="checkbox"] {
+.markdown-body .task-list-item input[type='checkbox'] {
   width: 1rem;
   height: 1rem;
   accent-color: #0078d4;
@@ -167,7 +167,7 @@
 
 /* Inline Code */
 .markdown-body code:not(pre code) {
-  font-family: "Cascadia Code", Consolas, monospace;
+  font-family: 'Cascadia Code', Consolas, monospace;
   font-size: 0.88em;
   padding: 0.2em 0.4em;
   border-radius: 4px;
@@ -184,7 +184,7 @@
 }
 
 .markdown-body pre code {
-  font-family: "Cascadia Code", Consolas, monospace;
+  font-family: 'Cascadia Code', Consolas, monospace;
   font-size: 0.9rem;
   padding: 1em;
   display: block;

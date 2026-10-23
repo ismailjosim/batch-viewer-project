@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import * as pdfjsLib from "pdfjs-dist";
-import { PdfHighlight, PdfComment } from "../../types";
-import { MessageSquare, Trash2 } from "lucide-react";
+import React, { useEffect, useState, useRef } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+import { PdfHighlight, PdfComment } from '../../types';
+import { MessageSquare, Trash2 } from 'lucide-react';
 
 interface PdfPageProps {
   pdfDoc: pdfjsLib.PDFDocumentProxy;
   pageNumber: number;
   zoom: number;
   containerWidth: number;
-  activeTool: "select" | "highlight" | "comment";
+  activeTool: 'select' | 'highlight' | 'comment';
   highlightColor: string;
   highlights: PdfHighlight[];
   comments: PdfComment[];
@@ -20,18 +20,9 @@ interface PdfPageProps {
     height: number;
     pageNumber: number;
   } | null;
-  onPageClick: (
-    e: React.MouseEvent<HTMLDivElement>,
-    pageNumber: number,
-  ) => void;
-  onMouseDown: (
-    e: React.MouseEvent<HTMLDivElement>,
-    pageNumber: number,
-  ) => void;
-  onMouseMove: (
-    e: React.MouseEvent<HTMLDivElement>,
-    pageNumber: number,
-  ) => void;
+  onPageClick: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
   onMouseUp: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
   onDeleteHighlight: (id: string) => void;
   onToggleComment: (id: string) => void;
@@ -99,7 +90,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
           height: Math.floor(viewport.height),
         });
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -117,7 +108,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
           setIsRendered(true);
         }
       } catch (err: any) {
-        if (err?.name !== "RenderingCancelledException") {
+        if (err?.name !== 'RenderingCancelledException') {
           console.error(`Page ${pageNumber} render error:`, err);
         }
       }
@@ -143,15 +134,15 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
       onMouseDown={(e) => onMouseDown(e, pageNumber)}
       onMouseMove={(e) => onMouseMove(e, pageNumber)}
       onMouseUp={(e) => onMouseUp(e, pageNumber)}
-      className={`relative bg-white shadow-2xl rounded-xs select-none transition-shadow ${
-        activeTool === "highlight"
-          ? "cursor-crosshair"
-          : activeTool === "comment"
-            ? "cursor-cell"
-            : "cursor-default"
+      className={`rounded-xs relative select-none bg-white shadow-2xl transition-shadow ${
+        activeTool === 'highlight'
+          ? 'cursor-crosshair'
+          : activeTool === 'comment'
+            ? 'cursor-cell'
+            : 'cursor-default'
       }`}
     >
-      <canvas ref={canvasRef} className="block w-full h-full" />
+      <canvas ref={canvasRef} className="block h-full w-full" />
 
       {/* Highlights Overlay */}
       {isRendered &&
@@ -165,7 +156,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
               height: `${h.heightPct * 100}%`,
               backgroundColor: h.color,
             }}
-            className="absolute opacity-40 hover:opacity-60 transition-opacity group pointer-events-auto cursor-pointer rounded-xs"
+            className="rounded-xs group pointer-events-auto absolute cursor-pointer opacity-40 transition-opacity hover:opacity-60"
             title="Click to remove highlight"
             onClick={(e) => {
               e.stopPropagation();
@@ -177,9 +168,9 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
                 e.stopPropagation();
                 onDeleteHighlight(h.id);
               }}
-              className="absolute -top-3 -right-3 w-5 h-5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center shadow-md transition-opacity"
+              className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white opacity-0 shadow-md transition-opacity group-hover:opacity-100"
             >
-              <Trash2 className="w-3 h-3" />
+              <Trash2 className="h-3 w-3" />
             </button>
           </div>
         ))}
@@ -193,7 +184,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
             width: currentDragBox.width,
             height: currentDragBox.height,
           }}
-          className="absolute bg-fluent-accent/30 border border-fluent-accent pointer-events-none rounded-xs"
+          className="rounded-xs pointer-events-none absolute border border-fluent-accent bg-fluent-accent/30"
         />
       )}
 
@@ -206,7 +197,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
               left: `${c.xPct * 100}%`,
               top: `${c.yPct * 100}%`,
             }}
-            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 pointer-events-auto"
+            className="pointer-events-auto absolute z-20 -translate-x-1/2 -translate-y-1/2"
           >
             <button
               onClick={(e) => {
@@ -214,37 +205,31 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
                 onToggleComment(c.id);
               }}
               title={`Note by ${c.author}: ${c.text}`}
-              className="w-6 h-6 rounded-full bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 ring-2 ring-white"
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-white shadow-lg ring-2 ring-white transition-transform hover:scale-110 hover:bg-amber-600"
             >
-              <MessageSquare className="w-3.5 h-3.5" />
+              <MessageSquare className="h-3.5 w-3.5" />
             </button>
 
             {/* Comment Note Popup */}
             {activeCommentId === c.id && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="absolute top-7 left-1/2 -translate-x-1/2 w-56 p-3 bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-text-primaryLight dark:text-fluent-text-primaryDark border border-fluent-border-light dark:border-fluent-border-dark rounded-xl shadow-2xl text-xs z-30 animate-in fade-in zoom-in-95"
+                className="animate-in fade-in zoom-in-95 absolute left-1/2 top-7 z-30 w-56 -translate-x-1/2 rounded-xl border border-fluent-border-light bg-fluent-card-light p-3 text-xs text-fluent-text-primaryLight shadow-2xl dark:border-fluent-border-dark dark:bg-fluent-card-dark dark:text-fluent-text-primaryDark"
               >
-                <div className="flex items-center justify-between mb-1.5 border-b border-fluent-border-light dark:border-fluent-border-dark pb-1">
-                  <span className="font-semibold text-fluent-accent text-[11px]">
-                    {c.author}
-                  </span>
+                <div className="mb-1.5 flex items-center justify-between border-b border-fluent-border-light pb-1 dark:border-fluent-border-dark">
+                  <span className="text-[11px] font-semibold text-fluent-accent">{c.author}</span>
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] opacity-50">
-                      {c.createdAt}
-                    </span>
+                    <span className="text-[10px] opacity-50">{c.createdAt}</span>
                     <button
                       onClick={() => onDeleteComment(c.id)}
                       title="Delete Comment"
-                      className="p-0.5 hover:text-red-500 rounded transition-colors"
+                      className="rounded p-0.5 transition-colors hover:text-red-500"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="h-3 w-3" />
                     </button>
                   </div>
                 </div>
-                <p className="text-[11px] leading-relaxed break-words">
-                  {c.text}
-                </p>
+                <p className="break-words text-[11px] leading-relaxed">{c.text}</p>
               </div>
             )}
           </div>

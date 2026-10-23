@@ -22,7 +22,12 @@ interface UsePdfDocumentProps {
   onSavePdf: (newBase64: string) => Promise<void>;
 }
 
-export function usePdfDocument({ base64Data, highlights, comments, onSavePdf }: UsePdfDocumentProps) {
+export function usePdfDocument({
+  base64Data,
+  highlights,
+  comments,
+  onSavePdf,
+}: UsePdfDocumentProps) {
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
   const [numPages, setNumPages] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);

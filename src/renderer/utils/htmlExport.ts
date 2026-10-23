@@ -3,17 +3,25 @@ import DOMPurify from 'dompurify';
 function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (m) => {
     switch (m) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&#39;';
-      default: return m;
+      case '&':
+        return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#39;';
+      default:
+        return m;
     }
   });
 }
 
-export async function exportMarkdownToHtml(fileName: string): Promise<{ success: boolean; path?: string; error?: string }> {
+export async function exportMarkdownToHtml(
+  fileName: string
+): Promise<{ success: boolean; path?: string; error?: string }> {
   if (!window.api) return { success: false, error: 'Electron API unavailable' };
 
   try {

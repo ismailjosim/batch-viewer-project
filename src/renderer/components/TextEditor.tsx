@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo } from 'react';
 
 interface TextEditorProps {
   content: string;
@@ -6,22 +6,18 @@ interface TextEditorProps {
   zoom: number;
 }
 
-export const TextEditor: React.FC<TextEditorProps> = ({
-  content,
-  onChange,
-  zoom,
-}) => {
+export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const lineCount = useMemo(() => {
-    return content.split("\n").length;
+    return content.split('\n').length;
   }, [content]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    if (e.key === "Tab") {
+    if (e.key === 'Tab') {
       e.preventDefault();
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -29,15 +25,14 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       if (e.shiftKey) {
         const before = content.substring(0, start);
         const after = content.substring(end);
-        if (before.endsWith("  ")) {
+        if (before.endsWith('  ')) {
           onChange(before.slice(0, -2) + after);
           setTimeout(() => {
             textarea.selectionStart = textarea.selectionEnd = start - 2;
           }, 0);
         }
       } else {
-        const next =
-          content.substring(0, start) + "  " + content.substring(end);
+        const next = content.substring(0, start) + '  ' + content.substring(end);
         onChange(next);
         setTimeout(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 2;
@@ -49,10 +44,10 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   return (
     <div
       style={{ fontSize: `${zoom * 100}%` }}
-      className="flex-1 h-full flex overflow-hidden bg-fluent-card-light/40 dark:bg-fluent-card-dark/40 font-mono"
+      className="flex h-full flex-1 overflow-hidden bg-fluent-card-light/40 font-mono dark:bg-fluent-card-dark/40"
     >
       {/* Line Numbers */}
-      <div className="w-14 py-6 select-none text-right pr-3 text-xs opacity-35 border-r border-fluent-border-light dark:border-fluent-border-dark overflow-hidden shrink-0 bg-black/5 dark:bg-black/10">
+      <div className="w-14 shrink-0 select-none overflow-hidden border-r border-fluent-border-light bg-black/5 py-6 pr-3 text-right text-xs opacity-35 dark:border-fluent-border-dark dark:bg-black/10">
         {Array.from({ length: lineCount }).map((_, i) => (
           <div key={i} className="leading-6">
             {i + 1}
@@ -68,7 +63,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
         onKeyDown={handleKeyDown}
         placeholder="Type text content here..."
         spellCheck={false}
-        className="flex-1 h-full p-6 bg-transparent resize-none outline-none leading-6 text-sm text-fluent-text-primaryLight dark:text-fluent-text-primaryDark placeholder:opacity-40 overflow-y-auto select-text font-mono"
+        className="h-full flex-1 select-text resize-none overflow-y-auto bg-transparent p-6 font-mono text-sm leading-6 text-fluent-text-primaryLight outline-none placeholder:opacity-40 dark:text-fluent-text-primaryDark"
       />
     </div>
   );

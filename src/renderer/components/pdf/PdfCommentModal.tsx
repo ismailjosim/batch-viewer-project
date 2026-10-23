@@ -1,5 +1,5 @@
-import React from "react";
-import { MessageSquare, X } from "lucide-react";
+import React from 'react';
+import { MessageSquare, X } from 'lucide-react';
 
 interface PdfCommentModalProps {
   pageNumber: number;
@@ -17,20 +17,18 @@ export const PdfCommentModal: React.FC<PdfCommentModalProps> = ({
   onCancel,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center animate-in fade-in select-none">
-      <div className="w-80 p-4 bg-fluent-card-light dark:bg-fluent-card-dark border border-fluent-border-light dark:border-fluent-border-dark rounded-xl shadow-2xl">
-        <div className="flex items-center justify-between mb-3">
+    <div className="backdrop-blur-xs animate-in fade-in fixed inset-0 z-50 flex select-none items-center justify-center bg-black/40">
+      <div className="w-80 rounded-xl border border-fluent-border-light bg-fluent-card-light p-4 shadow-2xl dark:border-fluent-border-dark dark:bg-fluent-card-dark">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-fluent-accent" />
-            <span className="font-semibold text-xs">
-              Add Page Note (P.{pageNumber})
-            </span>
+            <MessageSquare className="h-4 w-4 text-fluent-accent" />
+            <span className="text-xs font-semibold">Add Page Note (P.{pageNumber})</span>
           </div>
           <button
             onClick={onCancel}
-            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            className="rounded p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
 
@@ -40,20 +38,20 @@ export const PdfCommentModal: React.FC<PdfCommentModalProps> = ({
           onChange={(e) => onChangeInput(e.target.value)}
           placeholder="Write your note or feedback here..."
           rows={3}
-          className="w-full p-2.5 bg-black/5 dark:bg-white/5 border border-fluent-border-light dark:border-fluent-border-dark rounded-lg text-xs outline-none focus:border-fluent-accent resize-none text-fluent-text-primaryLight dark:text-fluent-text-primaryDark mb-3"
+          className="mb-3 w-full resize-none rounded-lg border border-fluent-border-light bg-black/5 p-2.5 text-xs text-fluent-text-primaryLight outline-none focus:border-fluent-accent dark:border-fluent-border-dark dark:bg-white/5 dark:text-fluent-text-primaryDark"
         />
 
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={onCancel}
-            className="px-3 py-1 rounded text-xs hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            className="rounded px-3 py-1 text-xs transition-colors hover:bg-black/5 dark:hover:bg-white/10"
           >
             Cancel
           </button>
           <button
             onClick={onSubmit}
             disabled={!commentInput.trim()}
-            className="px-3 py-1 bg-fluent-accent text-white rounded text-xs font-medium disabled:opacity-40 transition-opacity"
+            className="rounded bg-fluent-accent px-3 py-1 text-xs font-medium text-white transition-opacity disabled:opacity-40"
           >
             Attach Note
           </button>

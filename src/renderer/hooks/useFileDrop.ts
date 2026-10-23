@@ -48,7 +48,7 @@ export function useFileDrop({ onOpenFiles, onOpenFolder, onToast }: UseFileDropP
         if (window.api?.getPathForFile) {
           try {
             p = window.api.getPathForFile(file);
-          } catch { }
+          } catch {}
         }
         if (!p && (file as any).path) {
           p = (file as any).path;

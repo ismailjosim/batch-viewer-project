@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-electron
+release
+build
+coverage
+*.log
+.git
+.vscode
+.agents
+package-lock.json
