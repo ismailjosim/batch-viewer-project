@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageSquare, X } from 'lucide-react';
+import React from "react";
+import { MessageSquare, X } from "lucide-react";
 
 interface PdfCommentModalProps {
   pageNumber: number;
@@ -22,7 +22,9 @@ export const PdfCommentModal: React.FC<PdfCommentModalProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-fluent-accent" />
-            <span className="font-semibold text-xs">Add Page Note (P.{pageNumber})</span>
+            <span className="font-semibold text-xs">
+              Add Page Note (P.{pageNumber})
+            </span>
           </div>
           <button
             onClick={onCancel}

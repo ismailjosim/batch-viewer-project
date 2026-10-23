@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Folder, FolderOpen, ListTree, ChevronLeft } from 'lucide-react';
-import { WorkspaceFolder, RecentDocument } from '../types';
-import { SidebarFiles } from './sidebar/SidebarFiles';
-import { SidebarOutline } from './sidebar/SidebarOutline';
+import React, { useState } from "react";
+import { Folder, FolderOpen, ListTree, ChevronLeft } from "lucide-react";
+import { WorkspaceFolder, RecentDocument } from "../types";
+import { SidebarFiles } from "./sidebar/SidebarFiles";
+import { SidebarOutline } from "./sidebar/SidebarOutline";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -33,7 +33,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenFolderDialog,
   onRevealInFolder,
 }) => {
-  const [activeTab, setActiveTab] = useState<'files' | 'outline'>(workspaceFolder ? 'files' : 'outline');
+  const [activeTab, setActiveTab] = useState<"files" | "outline">(
+    workspaceFolder ? "files" : "outline",
+  );
 
   if (!isOpen) {
     return (
@@ -53,11 +55,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex items-center justify-between p-2 border-b border-fluent-border-light dark:border-fluent-border-dark bg-black/5 dark:bg-black/20">
         <div className="flex items-center gap-1">
           <button
-            onClick={() => setActiveTab('files')}
+            onClick={() => setActiveTab("files")}
             className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              activeTab === 'files'
-                ? 'bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-accent shadow-sm border border-fluent-border-light dark:border-fluent-border-dark'
-                : 'text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark hover:bg-black/5 dark:hover:bg-white/5'
+              activeTab === "files"
+                ? "bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-accent shadow-sm border border-fluent-border-light dark:border-fluent-border-dark"
+                : "text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark hover:bg-black/5 dark:hover:bg-white/5"
             }`}
           >
             <FolderOpen className="w-3.5 h-3.5" />
@@ -70,11 +72,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           <button
-            onClick={() => setActiveTab('outline')}
+            onClick={() => setActiveTab("outline")}
             className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              activeTab === 'outline'
-                ? 'bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-accent shadow-sm border border-fluent-border-light dark:border-fluent-border-dark'
-                : 'text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark hover:bg-black/5 dark:hover:bg-white/5'
+              activeTab === "outline"
+                ? "bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-accent shadow-sm border border-fluent-border-light dark:border-fluent-border-dark"
+                : "text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark hover:bg-black/5 dark:hover:bg-white/5"
             }`}
           >
             <ListTree className="w-3.5 h-3.5" />
@@ -92,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Dynamic Content */}
-      {activeTab === 'files' ? (
+      {activeTab === "files" ? (
         <SidebarFiles
           workspaceFolder={workspaceFolder}
           activeFilePath={activeFilePath}

@@ -1,11 +1,11 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { PdfHighlight, PdfComment } from '../types';
-import { AlertCircle } from 'lucide-react';
-import { PdfToolbar } from './pdf/PdfToolbar';
-import { PdfPageItem } from './pdf/PdfPageItem';
-import { PdfNotesDrawer } from './pdf/PdfNotesDrawer';
-import { PdfCommentModal } from './pdf/PdfCommentModal';
-import { usePdfDocument } from './pdf/usePdfDocument';
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { PdfHighlight, PdfComment } from "../types";
+import { AlertCircle } from "lucide-react";
+import { PdfToolbar } from "./pdf/PdfToolbar";
+import { PdfPageItem } from "./pdf/PdfPageItem";
+import { PdfNotesDrawer } from "./pdf/PdfNotesDrawer";
+import { PdfCommentModal } from "./pdf/PdfCommentModal";
+import { usePdfDocument } from "./pdf/usePdfDocument";
 
 interface PdfViewerProps {
   base64Data: string;
@@ -13,7 +13,10 @@ interface PdfViewerProps {
   highlights: PdfHighlight[];
   comments: PdfComment[];
   zoom: number;
-  onAnnotationsChange: (highlights: PdfHighlight[], comments: PdfComment[]) => void;
+  onAnnotationsChange: (
+    highlights: PdfHighlight[],
+    comments: PdfComment[],
+  ) => void;
   onSavePdf: (newBase64: string) => Promise<void>;
 }
 
@@ -36,20 +39,36 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   } = usePdfDocument({ base64Data, highlights, comments, onSavePdf });
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageInput, setPageInput] = useState<string>('1');
-  const [activeTool, setActiveTool] = useState<'select' | 'highlight' | 'comment'>('select');
-  const [highlightColor, setHighlightColor] = useState<string>('#ffe066');
+  const [pageInput, setPageInput] = useState<string>("1");
+  const [activeTool, setActiveTool] = useState<
+    "select" | "highlight" | "comment"
+  >("select");
+  const [highlightColor, setHighlightColor] = useState<string>("#ffe066");
   const [isNotesDrawerOpen, setIsNotesDrawerOpen] = useState<boolean>(false);
   const [containerWidth, setContainerWidth] = useState<number>(800);
 
   // New comment dialog state
-  const [pendingComment, setPendingComment] = useState<{ pageNumber: number; xPct: number; yPct: number } | null>(null);
-  const [commentInput, setCommentInput] = useState<string>('');
+  const [pendingComment, setPendingComment] = useState<{
+    pageNumber: number;
+    xPct: number;
+    yPct: number;
+  } | null>(null);
+  const [commentInput, setCommentInput] = useState<string>("");
   const [activeCommentId, setActiveCommentId] = useState<string | null>(null);
 
   // Highlight drawing state
-  const [dragStart, setDragStart] = useState<{ x: number; y: number; pageNumber: number } | null>(null);
-  const [currentDragBox, setCurrentDragBox] = useState<{ x: number; y: number; width: number; height: number; pageNumber: number } | null>(null);
+  const [dragStart, setDragStart] = useState<{
+    x: number;
+    y: number;
+    pageNumber: number;
+  } | null>(null);
+  const [currentDragBox, setCurrentDragBox] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    pageNumber: number;
+  } | null>(null);
 
   const pagesContainerRef = useRef<HTMLDivElement>(null);
   const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -91,7 +110,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   const scrollToPage = (pageNum: number) => {
     const target = pageRefs.current[pageNum - 1];
     if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
       setCurrentPage(pageNum);
       setPageInput(String(pageNum));
     }
@@ -107,8 +126,11 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   };
 
   // Drag-to-Highlight handlers
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool !== 'highlight') return;
+  const handleMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => {
+    if (activeTool !== "highlight") return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -116,8 +138,16 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     setCurrentDragBox({ x, y, width: 0, height: 0, pageNumber });
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool !== 'highlight' || !dragStart || dragStart.pageNumber !== pageNumber) return;
+  const handleMouseMove = (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => {
+    if (
+      activeTool !== "highlight" ||
+      !dragStart ||
+      dragStart.pageNumber !== pageNumber
+    )
+      return;
     const rect = e.currentTarget.getBoundingClientRect();
     const curX = e.clientX - rect.left;
     const curY = e.clientY - rect.top;
@@ -130,8 +160,15 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
     });
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool === 'highlight' && dragStart && currentDragBox?.pageNumber === pageNumber) {
+  const handleMouseUp = (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => {
+    if (
+      activeTool === "highlight" &&
+      dragStart &&
+      currentDragBox?.pageNumber === pageNumber
+    ) {
       const rect = e.currentTarget.getBoundingClientRect();
       if (currentDragBox.width > 5 && currentDragBox.height > 5) {
         const newHighlight: PdfHighlight = {
@@ -151,15 +188,18 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
   };
 
   // Comments handlers
-  const handlePageClick = (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => {
-    if (activeTool === 'comment') {
+  const handlePageClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => {
+    if (activeTool === "comment") {
       const rect = e.currentTarget.getBoundingClientRect();
       setPendingComment({
         pageNumber,
         xPct: (e.clientX - rect.left) / rect.width,
         yPct: (e.clientY - rect.top) / rect.height,
       });
-      setCommentInput('');
+      setCommentInput("");
     }
   };
 
@@ -174,27 +214,38 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
       xPct: pendingComment.xPct,
       yPct: pendingComment.yPct,
       text: commentInput.trim(),
-      author: 'You',
-      createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      author: "You",
+      createdAt: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
     onAnnotationsChange(highlights, [...comments, newComment]);
     setPendingComment(null);
-    setCommentInput('');
+    setCommentInput("");
   };
 
-  const deleteHighlight = (id: string) => onAnnotationsChange(highlights.filter((h) => h.id !== id), comments);
-  const deleteComment = (id: string) => onAnnotationsChange(highlights, comments.filter((c) => c.id !== id));
+  const deleteHighlight = (id: string) =>
+    onAnnotationsChange(
+      highlights.filter((h) => h.id !== id),
+      comments,
+    );
+  const deleteComment = (id: string) =>
+    onAnnotationsChange(
+      highlights,
+      comments.filter((c) => c.id !== id),
+    );
 
   // Keyboard shortcut Ctrl + S
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
         e.preventDefault();
         handleSaveWithAnnotations();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleSaveWithAnnotations]);
 
   return (
@@ -229,15 +280,21 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
           {isLoading && (
             <div className="flex-1 flex flex-col items-center justify-center text-white/70 gap-3 py-20">
               <div className="w-8 h-8 border-3 border-fluent-accent border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm font-medium">Rendering PDF pages...</span>
+              <span className="text-sm font-medium">
+                Rendering PDF pages...
+              </span>
             </div>
           )}
 
           {loadError && (
             <div className="flex-1 flex flex-col items-center justify-center text-red-400 gap-3 p-8 text-center py-20 bg-black/20 rounded-xl my-8">
               <AlertCircle className="w-10 h-10 text-red-400 opacity-80" />
-              <span className="text-base font-semibold">Unable to display PDF</span>
-              <p className="text-xs opacity-75 max-w-md bg-black/30 p-3 rounded font-mono">{loadError}</p>
+              <span className="text-base font-semibold">
+                Unable to display PDF
+              </span>
+              <p className="text-xs opacity-75 max-w-md bg-black/30 p-3 rounded font-mono">
+                {loadError}
+              </p>
             </div>
           )}
 
@@ -255,7 +312,9 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                   containerWidth={containerWidth}
                   activeTool={activeTool}
                   highlightColor={highlightColor}
-                  highlights={highlights.filter((h) => h.pageNumber === pageNum)}
+                  highlights={highlights.filter(
+                    (h) => h.pageNumber === pageNum,
+                  )}
                   comments={comments.filter((c) => c.pageNumber === pageNum)}
                   activeCommentId={activeCommentId}
                   currentDragBox={currentDragBox}
@@ -264,7 +323,9 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onDeleteHighlight={deleteHighlight}
-                  onToggleComment={(id) => setActiveCommentId(activeCommentId === id ? null : id)}
+                  onToggleComment={(id) =>
+                    setActiveCommentId(activeCommentId === id ? null : id)
+                  }
                   onDeleteComment={deleteComment}
                   setPageRef={(el) => (pageRefs.current[index] = el)}
                 />

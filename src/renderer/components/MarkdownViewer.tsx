@@ -135,7 +135,8 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
     }
 
-    const handlers: Array<{ el: Element; type: string; fn: EventListener }> = [];
+    const handlers: Array<{ el: Element; type: string; fn: EventListener }> =
+      [];
 
     // Intercept Links to prevent in-app navigation hijack
     const linkElements = containerRef.current.querySelectorAll("a");

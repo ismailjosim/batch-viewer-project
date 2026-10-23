@@ -42,7 +42,7 @@ export function createMainWindow(initialFiles: string[] = []): BrowserWindow {
       if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
         shell.openExternal(url);
       }
-    } catch {}
+    } catch { }
     return { action: 'deny' };
   });
 
@@ -58,7 +58,7 @@ export function createMainWindow(initialFiles: string[] = []): BrowserWindow {
       if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
         shell.openExternal(url);
       }
-    } catch {}
+    } catch { }
   });
 
   // Smooth window show

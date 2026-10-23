@@ -1,6 +1,6 @@
-import React from 'react';
-import { Bookmark, X, Trash2 } from 'lucide-react';
-import { PdfHighlight, PdfComment } from '../../types';
+import React from "react";
+import { Bookmark, X, Trash2 } from "lucide-react";
+import { PdfHighlight, PdfComment } from "../../types";
 
 interface PdfNotesDrawerProps {
   isOpen: boolean;
@@ -61,7 +61,9 @@ export const PdfNotesDrawer: React.FC<PdfNotesDrawerProps> = ({
                       Page {c.pageNumber}
                     </span>
                     <div className="flex items-center gap-1">
-                      <span className="text-[10px] opacity-50">{c.createdAt}</span>
+                      <span className="text-[10px] opacity-50">
+                        {c.createdAt}
+                      </span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -89,7 +91,9 @@ export const PdfNotesDrawer: React.FC<PdfNotesDrawerProps> = ({
             Highlights ({highlights.length})
           </span>
           {highlights.length === 0 ? (
-            <p className="text-[11px] opacity-50 italic">No highlights created</p>
+            <p className="text-[11px] opacity-50 italic">
+              No highlights created
+            </p>
           ) : (
             <div className="space-y-1.5">
               {highlights.map((h) => (

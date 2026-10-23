@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
 interface HeadingItem {
   id: string;
@@ -19,18 +19,18 @@ export const SidebarOutline: React.FC<SidebarOutlineProps> = ({
 }) => {
   const headings = useMemo<HeadingItem[]>(() => {
     if (!isMarkdown || !content) return [];
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     const items: HeadingItem[] = [];
 
     lines.forEach((line) => {
       const match = line.match(/^(#{1,6})\s+(.+)$/);
       if (match) {
         const level = match[1].length;
-        const text = match[2].trim().replace(/[*_`]/g, '');
+        const text = match[2].trim().replace(/[*_`]/g, "");
         const id = text
           .toLowerCase()
-          .replace(/[^\w\s-]/g, '')
-          .replace(/\s+/g, '-');
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-");
 
         items.push({ id, text, level });
       }

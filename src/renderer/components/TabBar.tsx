@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { DocumentTab, DocumentType } from '../types';
-import { FileText, FileCode, Plus, X, Home, Copy, ExternalLink, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { DocumentTab, DocumentType } from "../types";
+import {
+  FileText,
+  FileCode,
+  Plus,
+  X,
+  Home,
+  Copy,
+  ExternalLink,
+  ShieldAlert,
+} from "lucide-react";
 
 interface TabBarProps {
   tabs: DocumentTab[];
@@ -39,13 +48,13 @@ export const TabBar: React.FC<TabBarProps> = ({
   useEffect(() => {
     const handleClick = () => setContextMenu(null);
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setContextMenu(null);
+      if (e.key === "Escape") setContextMenu(null);
     };
-    window.addEventListener('click', handleClick);
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("click", handleClick);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('click', handleClick);
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("click", handleClick);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -61,13 +70,21 @@ export const TabBar: React.FC<TabBarProps> = ({
 
   const getTabIcon = (type: DocumentType) => {
     switch (type) {
-      case 'pdf':
-        return <span className="text-[10px] font-bold px-1 py-0.2 bg-red-500/20 text-red-500 rounded">PDF</span>;
-      case 'word':
-        return <span className="text-[10px] font-bold px-1 py-0.2 bg-blue-500/20 text-blue-500 rounded">DOCX</span>;
-      case 'text':
+      case "pdf":
+        return (
+          <span className="text-[10px] font-bold px-1 py-0.2 bg-red-500/20 text-red-500 rounded">
+            PDF
+          </span>
+        );
+      case "word":
+        return (
+          <span className="text-[10px] font-bold px-1 py-0.2 bg-blue-500/20 text-blue-500 rounded">
+            DOCX
+          </span>
+        );
+      case "text":
         return <FileCode className="w-3.5 h-3.5 text-emerald-400" />;
-      case 'markdown':
+      case "markdown":
       default:
         return <FileText className="w-3.5 h-3.5 text-fluent-accent" />;
     }
@@ -87,9 +104,9 @@ export const TabBar: React.FC<TabBarProps> = ({
           onClick={onShowOverview}
           title="Overview & Recent Documents"
           className={`h-7 px-2.5 flex items-center gap-1.5 rounded-t-md cursor-pointer transition-all border-t-2 shrink-0 ${
-            activeTabId === 'overview'
-              ? 'bg-fluent-card-light dark:bg-fluent-card-dark border-fluent-accent shadow-sm font-semibold text-fluent-accent'
-              : 'border-transparent opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark'
+            activeTabId === "overview"
+              ? "bg-fluent-card-light dark:bg-fluent-card-dark border-fluent-accent shadow-sm font-semibold text-fluent-accent"
+              : "border-transparent opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
           }`}
         >
           <Home className="w-3.5 h-3.5" />
@@ -105,15 +122,18 @@ export const TabBar: React.FC<TabBarProps> = ({
               onContextMenu={(e) => handleContextMenu(e, tab)}
               className={`group relative h-7 max-w-[190px] min-w-[110px] px-2.5 flex items-center justify-between rounded-t-md cursor-pointer transition-all border-t-2 ${
                 isActive
-                  ? 'bg-fluent-card-light dark:bg-fluent-card-dark border-fluent-accent shadow-sm font-medium text-fluent-text-primaryLight dark:text-fluent-text-primaryDark'
-                  : 'border-transparent opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark'
+                  ? "bg-fluent-card-light dark:bg-fluent-card-dark border-fluent-accent shadow-sm font-medium text-fluent-text-primaryLight dark:text-fluent-text-primaryDark"
+                  : "border-transparent opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
               }`}
             >
               <div className="flex items-center gap-2 truncate mr-1">
                 {getTabIcon(tab.fileType)}
                 <span className="truncate text-xs">{tab.fileName}</span>
                 {tab.isDirty && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-fluent-accent shrink-0" title="Unsaved changes" />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-fluent-accent shrink-0"
+                    title="Unsaved changes"
+                  />
                 )}
               </div>
 

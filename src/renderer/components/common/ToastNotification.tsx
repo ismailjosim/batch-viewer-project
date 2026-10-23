@@ -1,12 +1,15 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React from "react";
+import { X } from "lucide-react";
 
 interface ToastNotificationProps {
   message: string | null;
   onClose: () => void;
 }
 
-export const ToastNotification: React.FC<ToastNotificationProps> = ({ message, onClose }) => {
+export const ToastNotification: React.FC<ToastNotificationProps> = ({
+  message,
+  onClose,
+}) => {
   if (!message) return null;
 
   return (

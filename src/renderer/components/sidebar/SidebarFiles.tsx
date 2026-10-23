@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { FolderOpen, Search, ExternalLink, Clock } from 'lucide-react';
-import { WorkspaceFolder, DocumentType, RecentDocument } from '../../types';
+import React, { useMemo, useState } from "react";
+import { FolderOpen, Search, ExternalLink, Clock } from "lucide-react";
+import { WorkspaceFolder, DocumentType, RecentDocument } from "../../types";
 
 interface SidebarFilesProps {
   workspaceFolder: WorkspaceFolder | null;
@@ -19,17 +19,19 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
   onOpenFolderDialog,
   onRevealInFolder,
 }) => {
-  const [fileFilter, setFileFilter] = useState('');
+  const [fileFilter, setFileFilter] = useState("");
 
   const filteredFiles = useMemo(() => {
     if (!workspaceFolder) return [];
     if (!fileFilter.trim()) return workspaceFolder.files;
     const q = fileFilter.toLowerCase();
-    return workspaceFolder.files.filter((f) => f.name.toLowerCase().includes(q));
+    return workspaceFolder.files.filter((f) =>
+      f.name.toLowerCase().includes(q),
+    );
   }, [workspaceFolder, fileFilter]);
 
   const formatFileSize = (bytes: number) => {
-    if (!bytes || bytes <= 0) return '';
+    if (!bytes || bytes <= 0) return "";
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -37,25 +39,25 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
 
   const getFormatBadge = (type: DocumentType) => {
     switch (type) {
-      case 'pdf':
+      case "pdf":
         return (
           <span className="px-1 py-0.2 rounded text-[9px] font-bold tracking-wider uppercase bg-red-500/15 text-red-500 border border-red-500/25 shrink-0">
             PDF
           </span>
         );
-      case 'word':
+      case "word":
         return (
           <span className="px-1 py-0.2 rounded text-[9px] font-bold tracking-wider uppercase bg-blue-500/15 text-blue-500 border border-blue-500/25 shrink-0">
             DOCX
           </span>
         );
-      case 'text':
+      case "text":
         return (
           <span className="px-1 py-0.2 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 shrink-0">
             TXT
           </span>
         );
-      case 'markdown':
+      case "markdown":
       default:
         return (
           <span className="px-1 py-0.2 rounded text-[9px] font-bold tracking-wider uppercase bg-purple-500/15 text-purple-400 border border-purple-500/25 shrink-0">
@@ -72,7 +74,8 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
           <FolderOpen className="w-7 h-7 text-fluent-accent opacity-80" />
           <p className="text-xs font-semibold">No Folder Opened</p>
           <p className="text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark">
-            Open a folder to browse all markdown, pdf, word, and text docs in one place.
+            Open a folder to browse all markdown, pdf, word, and text docs in
+            one place.
           </p>
           <button
             onClick={onOpenFolderDialog}
@@ -117,7 +120,10 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
           <span className="text-[10px] uppercase font-semibold text-fluent-accent tracking-wider block">
             Workspace
           </span>
-          <span className="text-xs font-bold truncate block" title={workspaceFolder.dirPath}>
+          <span
+            className="text-xs font-bold truncate block"
+            title={workspaceFolder.dirPath}
+          >
             {workspaceFolder.folderName}
           </span>
         </div>
@@ -143,7 +149,7 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
           />
           {fileFilter && (
             <button
-              onClick={() => setFileFilter('')}
+              onClick={() => setFileFilter("")}
               className="absolute right-2 text-xs opacity-50 hover:opacity-100"
             >
               ×
@@ -160,15 +166,17 @@ export const SidebarFiles: React.FC<SidebarFilesProps> = ({
           </div>
         ) : (
           filteredFiles.map((f) => {
-            const isActive = activeFilePath && activeFilePath.toLowerCase() === f.path.toLowerCase();
+            const isActive =
+              activeFilePath &&
+              activeFilePath.toLowerCase() === f.path.toLowerCase();
             return (
               <div
                 key={f.path}
                 onClick={() => onOpenFileFromPath(f.path)}
                 className={`group w-full flex items-center justify-between px-2 py-1.5 rounded-md text-xs cursor-pointer transition-colors ${
                   isActive
-                    ? 'bg-fluent-accent/15 text-fluent-accent font-medium'
-                    : 'hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-primaryLight dark:text-fluent-text-primaryDark'
+                    ? "bg-fluent-accent/15 text-fluent-accent font-medium"
+                    : "hover:bg-black/5 dark:hover:bg-white/5 text-fluent-text-primaryLight dark:text-fluent-text-primaryDark"
                 }`}
                 title={f.path}
               >

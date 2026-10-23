@@ -36,7 +36,7 @@ async function scanDirectoryFiles(dirPath: string) {
           try {
             const stat = await fs.promises.stat(fullPath);
             size = stat.size;
-          } catch {}
+          } catch { }
           files.push({ name: entry.name, path: fullPath, size });
         }
       }
@@ -312,6 +312,6 @@ export function registerFileIpcHandlers() {
       if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
         await shell.openExternal(url);
       }
-    } catch {}
+    } catch { }
   });
 }

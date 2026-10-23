@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   FileText,
   Sun,
@@ -12,22 +12,22 @@ import {
   FilePlus,
   Eye,
   Columns,
-  Edit3
-} from 'lucide-react';
-import { DocumentType } from '../types';
-import appLogo from '../assets/logo.png';
+  Edit3,
+} from "lucide-react";
+import { DocumentType } from "../types";
+import appLogo from "../assets/logo.png";
 
 interface TitleBarProps {
   fileName: string | null;
   fileType?: DocumentType;
   isDirty: boolean;
-  theme: 'light' | 'dark';
-  viewMode: 'view' | 'split' | 'edit';
+  theme: "light" | "dark";
+  viewMode: "view" | "split" | "edit";
   onToggleTheme: () => void;
   onOpenFile: () => void;
   onSaveFile: () => void;
   onNewFile: () => void;
-  onViewModeChange: (mode: 'view' | 'split' | 'edit') => void;
+  onViewModeChange: (mode: "view" | "split" | "edit") => void;
   onGoHome?: () => void;
 }
 
@@ -70,7 +70,11 @@ export const TitleBar: React.FC<TitleBarProps> = ({
           title="Overview & Recent Documents"
           className="flex items-center gap-2 mr-3 font-semibold text-fluent-accent cursor-pointer hover:opacity-80 transition-opacity"
         >
-          <img src={appLogo} alt="Batch-Viewer" className="w-4 h-4 rounded-full object-contain" />
+          <img
+            src={appLogo}
+            alt="Batch-Viewer"
+            className="w-4 h-4 rounded-full object-contain"
+          />
           <span className="hidden sm:inline">Batch-Viewer</span>
         </div>
 
@@ -99,33 +103,39 @@ export const TitleBar: React.FC<TitleBarProps> = ({
         </button>
 
         {/* View mode toggle - shown for Markdown */}
-        {fileType === 'markdown' && (
+        {fileType === "markdown" && (
           <div className="flex items-center bg-black/5 dark:bg-white/5 rounded p-0.5 ml-2 border border-fluent-border-light dark:border-fluent-border-dark">
             <button
-              onClick={() => onViewModeChange('view')}
+              onClick={() => onViewModeChange("view")}
               title="Read / View Mode"
               className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === 'view' ? 'bg-fluent-accent text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/10'
+                viewMode === "view"
+                  ? "bg-fluent-accent text-white shadow-sm"
+                  : "hover:bg-black/5 dark:hover:bg-white/10"
               }`}
             >
               <Eye className="w-3 h-3" />
               <span className="hidden md:inline text-[11px]">View</span>
             </button>
             <button
-              onClick={() => onViewModeChange('split')}
+              onClick={() => onViewModeChange("split")}
               title="Split View"
               className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === 'split' ? 'bg-fluent-accent text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/10'
+                viewMode === "split"
+                  ? "bg-fluent-accent text-white shadow-sm"
+                  : "hover:bg-black/5 dark:hover:bg-white/10"
               }`}
             >
               <Columns className="w-3 h-3" />
               <span className="hidden md:inline text-[11px]">Split</span>
             </button>
             <button
-              onClick={() => onViewModeChange('edit')}
+              onClick={() => onViewModeChange("edit")}
               title="Edit Mode"
               className={`px-2 py-1 rounded flex items-center gap-1 transition-all ${
-                viewMode === 'edit' ? 'bg-fluent-accent text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/10'
+                viewMode === "edit"
+                  ? "bg-fluent-accent text-white shadow-sm"
+                  : "hover:bg-black/5 dark:hover:bg-white/10"
               }`}
             >
               <Edit3 className="w-3 h-3" />
@@ -137,17 +147,23 @@ export const TitleBar: React.FC<TitleBarProps> = ({
 
       {/* Center: File Title */}
       <div className="truncate max-w-[40%] text-center font-medium opacity-80 pointer-events-none">
-        {fileName || 'Untitled'} {isDirty ? '•' : ''}
+        {fileName || "Untitled"} {isDirty ? "•" : ""}
       </div>
 
       {/* Right: Theme switch & Windows 11 Titlebar controls */}
       <div className="flex items-center app-region-no-drag h-full">
         <button
           onClick={onToggleTheme}
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          title={
+            theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"
+          }
           className="p-2 mr-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5" />}
+          {theme === "dark" ? (
+            <Sun className="w-3.5 h-3.5 text-amber-400" />
+          ) : (
+            <Moon className="w-3.5 h-3.5" />
+          )}
         </button>
 
         <button
@@ -160,7 +176,11 @@ export const TitleBar: React.FC<TitleBarProps> = ({
           onClick={handleMaximize}
           className="w-11 h-full flex items-center justify-center hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
-          {isMaximized ? <Copy className="w-3 h-3 rotate-180" /> : <Square className="w-3 h-3" />}
+          {isMaximized ? (
+            <Copy className="w-3 h-3 rotate-180" />
+          ) : (
+            <Square className="w-3 h-3" />
+          )}
         </button>
         <button
           onClick={handleClose}

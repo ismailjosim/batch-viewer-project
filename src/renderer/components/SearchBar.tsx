@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronUp, ChevronDown, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { Search, ChevronUp, ChevronDown, X } from "lucide-react";
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -7,7 +7,7 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
         inputRef.current?.select();
       }, 50);
     } else {
-      setQuery('');
+      setQuery("");
     }
   }, [isOpen]);
 
@@ -28,10 +28,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({ isOpen, onClose }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       findNext(e.shiftKey);
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       e.preventDefault();
       onClose();
     }

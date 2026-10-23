@@ -1,6 +1,14 @@
-import React from 'react';
-import { Clock, Trash2, ArrowUpRight, X, FileText, FileCode, Layers } from 'lucide-react';
-import { RecentDocument, DocumentType } from '../../types';
+import React from "react";
+import {
+  Clock,
+  Trash2,
+  ArrowUpRight,
+  X,
+  FileText,
+  FileCode,
+  Layers,
+} from "lucide-react";
+import { RecentDocument, DocumentType } from "../../types";
 
 interface OverviewRecentsProps {
   recentFiles: RecentDocument[];
@@ -18,37 +26,40 @@ export const OverviewRecents: React.FC<OverviewRecentsProps> = ({
   const formatTimeAgo = (timestamp: number) => {
     const diff = Date.now() - timestamp;
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
+    if (mins < 1) return "Just now";
     if (mins < 60) return `${mins}m ago`;
     const hours = Math.floor(mins / 60);
     if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    if (days === 1) return 'Yesterday';
+    if (days === 1) return "Yesterday";
     if (days < 7) return `${days}d ago`;
-    return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return new Date(timestamp).toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   const getFormatBadge = (type: DocumentType) => {
     switch (type) {
-      case 'pdf':
+      case "pdf":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-red-500/15 text-red-500 border border-red-500/25">
             PDF
           </span>
         );
-      case 'word':
+      case "word":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-500/15 text-blue-500 border border-blue-500/25">
             DOCX
           </span>
         );
-      case 'text':
+      case "text":
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
             TXT
           </span>
         );
-      case 'markdown':
+      case "markdown":
       default:
         return (
           <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-purple-500/15 text-purple-400 border border-purple-500/25">
@@ -60,13 +71,13 @@ export const OverviewRecents: React.FC<OverviewRecentsProps> = ({
 
   const getFormatIcon = (type: DocumentType) => {
     switch (type) {
-      case 'pdf':
+      case "pdf":
         return <FileText className="w-5 h-5 text-red-500" />;
-      case 'word':
+      case "word":
         return <FileText className="w-5 h-5 text-blue-500" />;
-      case 'text':
+      case "text":
         return <FileCode className="w-5 h-5 text-emerald-400" />;
-      case 'markdown':
+      case "markdown":
       default:
         return <FileText className="w-5 h-5 text-purple-400" />;
     }
@@ -91,7 +102,9 @@ export const OverviewRecents: React.FC<OverviewRecentsProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-fluent-accent" />
-          <h2 className="text-sm font-semibold tracking-wide uppercase">Recent Documents</h2>
+          <h2 className="text-sm font-semibold tracking-wide uppercase">
+            Recent Documents
+          </h2>
           <span className="text-xs px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 font-mono">
             {recentFiles.length}
           </span>
@@ -124,7 +137,10 @@ export const OverviewRecents: React.FC<OverviewRecentsProps> = ({
                   </span>
                   {getFormatBadge(doc.fileType)}
                 </div>
-                <p className="text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark font-mono truncate" title={doc.filePath}>
+                <p
+                  className="text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark font-mono truncate"
+                  title={doc.filePath}
+                >
                   {doc.filePath}
                 </p>
               </div>

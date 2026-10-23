@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { ArrowUpCircle, X, ExternalLink, CheckCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { ArrowUpCircle, X, ExternalLink, CheckCircle } from "lucide-react";
 
 interface UpdateNotificationProps {
   currentVersion?: string;
 }
 
-export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ currentVersion = '1.0.0' }) => {
+export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
+  currentVersion = "1.0.0",
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const checkForUpdates = () => {
-    setStatusMessage('Checking for updates...');
+    setStatusMessage("Checking for updates...");
     setTimeout(() => {
-      setStatusMessage(`You are running Batch-Viewer v${currentVersion} (Latest Version)`);
+      setStatusMessage(
+        `You are running Batch-Viewer v${currentVersion} (Latest Version)`,
+      );
       setTimeout(() => setStatusMessage(null), 4000);
     }, 800);
   };

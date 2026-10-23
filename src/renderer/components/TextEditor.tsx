@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo } from "react";
 
 interface TextEditorProps {
   content: string;
@@ -6,18 +6,22 @@ interface TextEditorProps {
   zoom: number;
 }
 
-export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom }) => {
+export const TextEditor: React.FC<TextEditorProps> = ({
+  content,
+  onChange,
+  zoom,
+}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const lineCount = useMemo(() => {
-    return content.split('\n').length;
+    return content.split("\n").length;
   }, [content]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    if (e.key === 'Tab') {
+    if (e.key === "Tab") {
       e.preventDefault();
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -25,14 +29,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom 
       if (e.shiftKey) {
         const before = content.substring(0, start);
         const after = content.substring(end);
-        if (before.endsWith('  ')) {
+        if (before.endsWith("  ")) {
           onChange(before.slice(0, -2) + after);
           setTimeout(() => {
             textarea.selectionStart = textarea.selectionEnd = start - 2;
           }, 0);
         }
       } else {
-        const next = content.substring(0, start) + '  ' + content.substring(end);
+        const next =
+          content.substring(0, start) + "  " + content.substring(end);
         onChange(next);
         setTimeout(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 2;

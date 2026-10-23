@@ -1,5 +1,5 @@
-import React from 'react';
-import { FolderOpen, FolderTree, FilePlus, ArrowUpRight } from 'lucide-react';
+import React from "react";
+import { FolderOpen, FolderTree, FilePlus, ArrowUpRight } from "lucide-react";
 
 interface OverviewActionsProps {
   onOpenFile: () => void;
@@ -34,7 +34,9 @@ export const OverviewActions: React.FC<OverviewActionsProps> = ({
         </div>
         <div className="mt-3 pt-3 border-t border-fluent-border-light dark:border-fluent-border-dark flex items-center justify-between text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark font-mono">
           <span>Single or multi file</span>
-          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">Ctrl + O</span>
+          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">
+            Ctrl + O
+          </span>
         </div>
       </button>
 
@@ -58,7 +60,9 @@ export const OverviewActions: React.FC<OverviewActionsProps> = ({
         </div>
         <div className="mt-3 pt-3 border-t border-fluent-border-light dark:border-fluent-border-dark flex items-center justify-between text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark font-mono">
           <span>Folder Workspace</span>
-          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">Directory</span>
+          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">
+            Directory
+          </span>
         </div>
       </button>
 
@@ -82,7 +86,9 @@ export const OverviewActions: React.FC<OverviewActionsProps> = ({
         </div>
         <div className="mt-3 pt-3 border-t border-fluent-border-light dark:border-fluent-border-dark flex items-center justify-between text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark font-mono">
           <span>Instant tab</span>
-          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">Ctrl + N</span>
+          <span className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5">
+            Ctrl + N
+          </span>
         </div>
       </button>
     </div>

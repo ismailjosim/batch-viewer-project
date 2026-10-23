@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import mammoth from 'mammoth';
-import DOMPurify from 'dompurify';
-import { FileDown, Edit3, Eye } from 'lucide-react';
+import React, { useEffect, useState, useRef } from "react";
+import mammoth from "mammoth";
+import DOMPurify from "dompurify";
+import { FileDown, Edit3, Eye } from "lucide-react";
 
 interface WordViewerProps {
   base64Data?: string;
@@ -21,7 +21,7 @@ export const WordViewer: React.FC<WordViewerProps> = ({
   onSaveAsPdf,
 }) => {
   const [htmlContent, setHtmlContent] = useState<string>(() =>
-    initialHtml ? DOMPurify.sanitize(initialHtml) : ''
+    initialHtml ? DOMPurify.sanitize(initialHtml) : "",
   );
   const [loading, setLoading] = useState<boolean>(!initialHtml && !!base64Data);
   const [error, setError] = useState<string | null>(null);
@@ -49,11 +49,13 @@ export const WordViewer: React.FC<WordViewerProps> = ({
           bytes[i] = binaryString.charCodeAt(i);
         }
 
-        const result = await mammoth.convertToHtml({ arrayBuffer: bytes.buffer });
+        const result = await mammoth.convertToHtml({
+          arrayBuffer: bytes.buffer,
+        });
         if (isMounted) {
           const sanitizedHtml = DOMPurify.sanitize(result.value, {
-            ADD_TAGS: ['table', 'thead', 'tbody', 'tr', 'td', 'th'],
-            ADD_ATTR: ['style', 'class', 'colspan', 'rowspan'],
+            ADD_TAGS: ["table", "thead", "tbody", "tr", "td", "th"],
+            ADD_ATTR: ["style", "class", "colspan", "rowspan"],
           });
           setHtmlContent(sanitizedHtml);
           onContentChange(sanitizedHtml);
@@ -89,21 +91,27 @@ export const WordViewer: React.FC<WordViewerProps> = ({
           <span className="font-semibold px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
             Word / Docs
           </span>
-          <span className="opacity-75 font-medium truncate max-w-xs">{fileName}</span>
+          <span className="opacity-75 font-medium truncate max-w-xs">
+            {fileName}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsEditable(!isEditable)}
-            title={isEditable ? 'Switch to Reader Mode' : 'Switch to Edit Mode'}
+            title={isEditable ? "Switch to Reader Mode" : "Switch to Edit Mode"}
             className={`px-2.5 py-1 rounded flex items-center gap-1.5 transition-all ${
               isEditable
-                ? 'bg-fluent-accent text-white shadow-sm'
-                : 'hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark'
+                ? "bg-fluent-accent text-white shadow-sm"
+                : "hover:bg-black/5 dark:hover:bg-white/10 text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark"
             }`}
           >
-            {isEditable ? <Eye className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
-            <span>{isEditable ? 'Reading View' : 'Edit Document'}</span>
+            {isEditable ? (
+              <Eye className="w-3.5 h-3.5" />
+            ) : (
+              <Edit3 className="w-3.5 h-3.5" />
+            )}
+            <span>{isEditable ? "Reading View" : "Edit Document"}</span>
           </button>
 
           <button
@@ -133,7 +141,7 @@ export const WordViewer: React.FC<WordViewerProps> = ({
           <div
             style={{
               transform: `scale(${zoom})`,
-              transformOrigin: 'top center',
+              transformOrigin: "top center",
             }}
             className="transition-transform duration-150 mb-12"
           >
@@ -143,13 +151,15 @@ export const WordViewer: React.FC<WordViewerProps> = ({
               onInput={handleInput}
               suppressContentEditableWarning={true}
               style={{
-                width: '800px',
-                minHeight: '1100px',
+                width: "800px",
+                minHeight: "1100px",
               }}
               className={`p-16 bg-white dark:bg-[#20222a] text-[#1c1d1f] dark:text-[#f0f0f2] shadow-2xl rounded-sm border border-black/10 dark:border-white/10 outline-none font-serif leading-relaxed text-base transition-shadow ${
-                isEditable ? 'ring-2 ring-fluent-accent/50 cursor-text' : ''
+                isEditable ? "ring-2 ring-fluent-accent/50 cursor-text" : ""
               } prose dark:prose-invert max-w-none prose-headings:font-sans prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:my-3 prose-table:border-collapse prose-td:border prose-td:p-2 prose-th:border prose-th:p-2 prose-th:bg-black/5 dark:prose-th:bg-white/5`}
-              dangerouslySetInnerHTML={{ __html: htmlContent || '<p>Empty document</p>' }}
+              dangerouslySetInnerHTML={{
+                __html: htmlContent || "<p>Empty document</p>",
+              }}
             />
           </div>
         )}

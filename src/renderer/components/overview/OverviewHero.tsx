@@ -1,5 +1,5 @@
-import React from 'react';
-import appLogo from '../../assets/logo.png';
+import React from "react";
+import appLogo from "../../assets/logo.png";
 
 export const OverviewHero: React.FC = () => {
   return (
@@ -18,7 +18,8 @@ export const OverviewHero: React.FC = () => {
           Batch-Viewer
         </h1>
         <p className="text-xs md:text-sm text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark max-w-md">
-          Fast, high-fidelity Document Reader, Annotator & Editor for Batch Studio
+          Fast, high-fidelity Document Reader, Annotator & Editor for Batch
+          Studio
         </p>
       </div>
 

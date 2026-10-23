@@ -1,8 +1,8 @@
-import React from 'react';
-import { RecentDocument } from '../types';
-import { OverviewHero } from './overview/OverviewHero';
-import { OverviewActions } from './overview/OverviewActions';
-import { OverviewRecents } from './overview/OverviewRecents';
+import React from "react";
+import { RecentDocument } from "../types";
+import { OverviewHero } from "./overview/OverviewHero";
+import { OverviewActions } from "./overview/OverviewActions";
+import { OverviewRecents } from "./overview/OverviewRecents";
 
 interface OverviewPageProps {
   recentFiles: RecentDocument[];

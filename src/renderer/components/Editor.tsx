@@ -1,5 +1,5 @@
-import React, { useRef, useMemo, useEffect } from 'react';
-import { MarkdownToolbar } from './MarkdownToolbar';
+import React, { useRef, useMemo, useEffect } from "react";
+import { MarkdownToolbar } from "./MarkdownToolbar";
 
 interface EditorProps {
   content: string;
@@ -21,12 +21,16 @@ export const Editor: React.FC<EditorProps> = ({
   const isInternalScrollRef = useRef(false);
 
   const lineCount = useMemo(() => {
-    return content.split('\n').length;
+    return content.split("\n").length;
   }, [content]);
 
   // Synchronize incoming external scroll from Split View Preview
   useEffect(() => {
-    if (externalScrollPct !== undefined && externalScrollPct !== null && textareaRef.current) {
+    if (
+      externalScrollPct !== undefined &&
+      externalScrollPct !== null &&
+      textareaRef.current
+    ) {
       if (isInternalScrollRef.current) return;
       const el = textareaRef.current;
       const maxScroll = el.scrollHeight - el.clientHeight;
@@ -56,7 +60,7 @@ export const Editor: React.FC<EditorProps> = ({
     }
   };
 
-  const handleInsert = (prefix: string, suffix = '', defaultText = '') => {
+  const handleInsert = (prefix: string, suffix = "", defaultText = "") => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -66,14 +70,15 @@ export const Editor: React.FC<EditorProps> = ({
     const textToInsert = selected || defaultText;
     const replacement = `${prefix}${textToInsert}${suffix}`;
 
-    const newContent = content.substring(0, start) + replacement + content.substring(end);
+    const newContent =
+      content.substring(0, start) + replacement + content.substring(end);
     onChange(newContent);
 
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(
         start + prefix.length,
-        start + prefix.length + textToInsert.length
+        start + prefix.length + textToInsert.length,
       );
     }, 0);
   };
@@ -83,7 +88,7 @@ export const Editor: React.FC<EditorProps> = ({
     if (!textarea) return;
 
     // Tab key indentation
-    if (e.key === 'Tab') {
+    if (e.key === "Tab") {
       e.preventDefault();
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -92,7 +97,7 @@ export const Editor: React.FC<EditorProps> = ({
         // Outdent
         const before = content.substring(0, start);
         const after = content.substring(end);
-        if (before.endsWith('  ')) {
+        if (before.endsWith("  ")) {
           onChange(before.slice(0, -2) + after);
           setTimeout(() => {
             textarea.selectionStart = textarea.selectionEnd = start - 2;
@@ -100,7 +105,8 @@ export const Editor: React.FC<EditorProps> = ({
         }
       } else {
         // Indent 2 spaces
-        const updated = content.substring(0, start) + '  ' + content.substring(end);
+        const updated =
+          content.substring(0, start) + "  " + content.substring(end);
         onChange(updated);
         setTimeout(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 2;
@@ -109,21 +115,21 @@ export const Editor: React.FC<EditorProps> = ({
     }
 
     // Bold (Ctrl+B)
-    if (e.ctrlKey && e.key.toLowerCase() === 'b') {
+    if (e.ctrlKey && e.key.toLowerCase() === "b") {
       e.preventDefault();
-      handleInsert('**', '**', 'bold text');
+      handleInsert("**", "**", "bold text");
     }
 
     // Italic (Ctrl+I)
-    if (e.ctrlKey && e.key.toLowerCase() === 'i') {
+    if (e.ctrlKey && e.key.toLowerCase() === "i") {
       e.preventDefault();
-      handleInsert('*', '*', 'italic text');
+      handleInsert("*", "*", "italic text");
     }
 
     // Link (Ctrl+K)
-    if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+    if (e.ctrlKey && e.key.toLowerCase() === "k") {
       e.preventDefault();
-      handleInsert('[', '](https://)', 'link text');
+      handleInsert("[", "](https://)", "link text");
     }
   };
 

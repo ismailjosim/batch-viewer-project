@@ -1,6 +1,14 @@
-import React, { useMemo } from 'react';
-import { Search, FileDown, ZoomIn, ZoomOut, RotateCcw, ArrowUpCircle, Globe } from 'lucide-react';
-import { DocumentType } from '../types';
+import React, { useMemo } from "react";
+import {
+  Search,
+  FileDown,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  ArrowUpCircle,
+  Globe,
+} from "lucide-react";
+import { DocumentType } from "../types";
 
 interface StatusBarProps {
   content: string;
@@ -34,10 +42,10 @@ export const StatusBar: React.FC<StatusBarProps> = ({
   onCheckUpdates,
 }) => {
   const stats = useMemo(() => {
-    if (fileType === 'pdf') {
+    if (fileType === "pdf") {
       return null;
     }
-    const clean = content.replace(/[#*`_~[\]()]/g, '');
+    const clean = content.replace(/[#*`_~[\]()]/g, "");
     const words = clean.trim() ? clean.trim().split(/\s+/).length : 0;
     const chars = content.length;
     const readMinutes = Math.max(1, Math.ceil(words / 200));
@@ -48,7 +56,9 @@ export const StatusBar: React.FC<StatusBarProps> = ({
     <footer className="h-7 w-full flex items-center justify-between px-3 bg-fluent-card-light/60 dark:bg-fluent-card-dark/60 border-t border-fluent-border-light dark:border-fluent-border-dark select-none text-[11px] text-fluent-text-secondaryLight dark:text-fluent-text-secondaryDark shrink-0">
       {/* Left: File info / stats */}
       <div className="flex items-center gap-4 truncate">
-        <span className="truncate max-w-xs opacity-75">{filePath || 'Untitled'}</span>
+        <span className="truncate max-w-xs opacity-75">
+          {filePath || "Untitled"}
+        </span>
 
         {stats ? (
           <div className="hidden sm:flex items-center gap-3 opacity-90">
@@ -58,7 +68,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
             <span>•</span>
             <span>~{stats.readMinutes} min read</span>
           </div>
-        ) : fileType === 'pdf' ? (
+        ) : fileType === "pdf" ? (
           <div className="hidden sm:flex items-center gap-3 opacity-90">
             <span>{highlightCount} Highlights</span>
             <span>•</span>
@@ -69,7 +79,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
 
       {/* Right: Actions & Zoom */}
       <div className="flex items-center gap-1">
-        {fileType === 'markdown' || fileType === 'text' ? (
+        {fileType === "markdown" || fileType === "text" ? (
           <button
             onClick={onOpenSearch}
             title="Search in document (Ctrl+F)"
@@ -80,7 +90,7 @@ export const StatusBar: React.FC<StatusBarProps> = ({
           </button>
         ) : null}
 
-        {fileType === 'markdown' && (
+        {fileType === "markdown" && (
           <>
             <button
               onClick={onExportPDF}

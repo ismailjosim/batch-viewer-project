@@ -1,5 +1,5 @@
-@import 'katex/dist/katex.min.css';
-@import 'highlight.js/styles/github-dark.css';
+@import "katex/dist/katex.min.css";
+@import "highlight.js/styles/github-dark.css";
 
 @tailwind base;
 @tailwind components;
@@ -35,7 +35,12 @@
 
 /* Markdown typography styling */
 .markdown-body {
-  font-family: 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Segoe UI Variable Text",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.68;
   color: inherit;
 }
@@ -65,10 +70,19 @@
   padding-bottom: 0.25em;
 }
 
-.markdown-body h3 { font-size: 1.35rem; }
-.markdown-body h4 { font-size: 1.15rem; }
-.markdown-body h5 { font-size: 1rem; }
-.markdown-body h6 { font-size: 0.9rem; opacity: 0.85; }
+.markdown-body h3 {
+  font-size: 1.35rem;
+}
+.markdown-body h4 {
+  font-size: 1.15rem;
+}
+.markdown-body h5 {
+  font-size: 1rem;
+}
+.markdown-body h6 {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
 
 .markdown-body p {
   margin-top: 0.8em;
@@ -153,7 +167,7 @@
 
 /* Inline Code */
 .markdown-body code:not(pre code) {
-  font-family: 'Cascadia Code', Consolas, monospace;
+  font-family: "Cascadia Code", Consolas, monospace;
   font-size: 0.88em;
   padding: 0.2em 0.4em;
   border-radius: 4px;
@@ -170,7 +184,7 @@
 }
 
 .markdown-body pre code {
-  font-family: 'Cascadia Code', Consolas, monospace;
+  font-family: "Cascadia Code", Consolas, monospace;
   font-size: 0.9rem;
   padding: 1em;
   display: block;

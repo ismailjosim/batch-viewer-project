@@ -2,20 +2,16 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TitleBar } from './components/TitleBar';
 import { TabBar } from './components/TabBar';
 import { Sidebar } from './components/Sidebar';
-import { MarkdownViewer } from './components/MarkdownViewer';
-import { Editor } from './components/Editor';
-import { PdfViewer } from './components/PdfViewer';
-import { WordViewer } from './components/WordViewer';
-import { TextEditor } from './components/TextEditor';
+import { DocumentContentArea } from './components/DocumentContentArea';
 import { SearchBar } from './components/SearchBar';
 import { StatusBar } from './components/StatusBar';
-import { OverviewPage } from './components/OverviewPage';
 import { DragDropOverlay } from './components/common/DragDropOverlay';
 import { ToastNotification } from './components/common/ToastNotification';
 import { WorkspaceFolder, FolderFileItem, detectFileType } from './types';
 import { useRecentFiles } from './hooks/useRecentFiles';
 import { useDocumentTabs } from './hooks/useDocumentTabs';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useFileDrop } from './hooks/useFileDrop';
 import { exportMarkdownToHtml } from './utils/htmlExport';
 
 export const App: React.FC = () => {
@@ -47,7 +43,6 @@ export const App: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
   const [updateToast, setUpdateToast] = useState<string | null>(null);
   const [externalScrollPct, setExternalScrollPct] = useState<number | null>(null);
 
@@ -140,83 +135,28 @@ export const App: React.FC = () => {
     }
   };
 
-  // Drag and Drop (Electron 30+ webUtils API + directory drop support)
-  const dragCounterRef = useRef(0);
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounterRef.current += 1;
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-    setIsDragging(true);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounterRef.current = Math.max(0, dragCounterRef.current - 1);
-    if (dragCounterRef.current === 0) {
-      setIsDragging(false);
-    }
-  };
-
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    dragCounterRef.current = 0;
-    setIsDragging(false);
-    const fileList = e.dataTransfer.files;
-    if (!fileList || fileList.length === 0) return;
-
-    const paths: string[] = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      let p = '';
-      if (window.api?.getPathForFile) {
-        try {
-          p = window.api.getPathForFile(file);
-        } catch {}
+  const handleOpenFolderFromDrop = useCallback(
+    (folder: { dirPath: string; folderName: string; files: FolderFileItem[] }) => {
+      setWorkspaceFolder(folder);
+      setIsSidebarOpen(true);
+      if (tabs.length === 0 && folder.files.length > 0) {
+        openFileFromDisk(folder.files[0].path);
+      } else {
+        setUpdateToast(`Opened folder "${folder.folderName}" (${folder.files.length} documents)`);
+        setTimeout(() => setUpdateToast(null), 3000);
       }
-      if (!p && (file as any).path) {
-        p = (file as any).path;
-      }
-      if (p) paths.push(p);
-    }
+    },
+    [tabs.length, openFileFromDisk]
+  );
 
-    if (paths.length === 0) return;
-
-    // Check if single dropped item is a folder
-    if (paths.length === 1 && window.api?.getPathInfo) {
-      const info = await window.api.getPathInfo(paths[0]);
-      if (info.isDirectory && window.api.openDirectoryPath) {
-        const res = await window.api.openDirectoryPath(paths[0]);
-        if (res && res.files && res.files.length > 0) {
-          const items: FolderFileItem[] = res.files.map((f: any) => ({
-            name: f.name,
-            path: f.path,
-            fileType: detectFileType(f.path),
-            size: f.size,
-          }));
-          const folderName = res.folderName || paths[0].split(/[\/\\]/).pop() || 'Workspace';
-          setWorkspaceFolder({ dirPath: res.dirPath, folderName, files: items });
-          setIsSidebarOpen(true);
-          if (tabs.length === 0 && items.length > 0) {
-            await openFileFromDisk(items[0].path);
-          } else {
-            setUpdateToast(`Opened folder "${folderName}" (${items.length} documents)`);
-            setTimeout(() => setUpdateToast(null), 3000);
-          }
-          return;
-        }
-      }
-    }
-
-    // Open dropped file(s)
-    openMultipleFilesFromDisk(paths);
-  };
+  const { isDragging, handleDragEnter, handleDragOver, handleDragLeave, handleDrop } = useFileDrop({
+    onOpenFiles: openMultipleFilesFromDisk,
+    onOpenFolder: handleOpenFolderFromDrop,
+    onToast: (msg) => {
+      setUpdateToast(msg);
+      setTimeout(() => setUpdateToast(null), 3000);
+    },
+  });
 
   // Keyboard Shortcuts Hook
   useKeyboardShortcuts({
@@ -291,61 +231,28 @@ export const App: React.FC = () => {
         )}
 
         <div className="flex-1 flex overflow-hidden">
-          {isOverviewActive ? (
-            <OverviewPage
-              recentFiles={recentFiles}
-              onOpenFile={handleOpenFile}
-              onOpenFolder={handleOpenFolder}
-              onNewDocument={handleNewTab}
-              onSelectRecent={openFileFromDisk}
-              onRemoveRecent={removeRecent}
-              onClearRecent={clearRecents}
-            />
-          ) : activeTab.fileType === 'pdf' && activeTab.base64Data ? (
-            <PdfViewer
-              base64Data={activeTab.base64Data}
-              filePath={activeTab.filePath}
-              highlights={activeTab.pdfHighlights || []}
-              comments={activeTab.pdfComments || []}
-              zoom={zoom}
-              onAnnotationsChange={handlePdfAnnotationsChange}
-              onSavePdf={handleSavePdf}
-            />
-          ) : activeTab.fileType === 'word' ? (
-            <WordViewer
-              base64Data={activeTab.base64Data}
-              initialHtml={activeTab.content}
-              fileName={activeTab.fileName}
-              zoom={zoom}
-              onContentChange={handleContentChange}
-              onSaveAsPdf={handleExportPDF}
-            />
-          ) : activeTab.fileType === 'text' ? (
-            <TextEditor content={activeTab.content} onChange={handleContentChange} zoom={zoom} />
-          ) : (
-            <>
-              {(viewMode === 'edit' || viewMode === 'split') && (
-                <div className={`h-full overflow-hidden ${viewMode === 'split' ? 'w-1/2 border-r border-fluent-border-light dark:border-fluent-border-dark' : 'w-full'}`}>
-                  <Editor
-                    content={activeTab?.content || ''}
-                    onChange={handleContentChange}
-                    zoom={zoom}
-                    onScroll={viewMode === 'split' ? handleEditorScroll : undefined}
-                    externalScrollPct={viewMode === 'split' ? externalScrollPct : null}
-                  />
-                </div>
-              )}
-              {(viewMode === 'view' || viewMode === 'split') && (
-                <div
-                  ref={viewerContainerRef}
-                  onScroll={viewMode === 'split' ? handleViewerScroll : undefined}
-                  className={`h-full overflow-y-auto ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}
-                >
-                  <MarkdownViewer content={activeTab?.content || ''} dirName={activeTab?.dirName} theme={theme} zoom={zoom} />
-                </div>
-              )}
-            </>
-          )}
+          <DocumentContentArea
+            isOverviewActive={isOverviewActive}
+            activeTab={activeTab}
+            viewMode={viewMode}
+            theme={theme}
+            zoom={zoom}
+            recentFiles={recentFiles}
+            viewerContainerRef={viewerContainerRef}
+            externalScrollPct={externalScrollPct}
+            onOpenFile={handleOpenFile}
+            onOpenFolder={handleOpenFolder}
+            onNewDocument={handleNewTab}
+            onSelectRecent={openFileFromDisk}
+            onRemoveRecent={removeRecent}
+            onClearRecent={clearRecents}
+            onAnnotationsChange={handlePdfAnnotationsChange}
+            onSavePdf={handleSavePdf}
+            onContentChange={handleContentChange}
+            onExportPDF={handleExportPDF}
+            onEditorScroll={handleEditorScroll}
+            onViewerScroll={handleViewerScroll}
+          />
         </div>
       </div>
 

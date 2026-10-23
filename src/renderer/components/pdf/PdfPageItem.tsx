@@ -1,22 +1,37 @@
-import React, { useEffect, useState, useRef } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
-import { PdfHighlight, PdfComment } from '../../types';
-import { MessageSquare, Trash2 } from 'lucide-react';
+import React, { useEffect, useState, useRef } from "react";
+import * as pdfjsLib from "pdfjs-dist";
+import { PdfHighlight, PdfComment } from "../../types";
+import { MessageSquare, Trash2 } from "lucide-react";
 
 interface PdfPageProps {
   pdfDoc: pdfjsLib.PDFDocumentProxy;
   pageNumber: number;
   zoom: number;
   containerWidth: number;
-  activeTool: 'select' | 'highlight' | 'comment';
+  activeTool: "select" | "highlight" | "comment";
   highlightColor: string;
   highlights: PdfHighlight[];
   comments: PdfComment[];
   activeCommentId: string | null;
-  currentDragBox: { x: number; y: number; width: number; height: number; pageNumber: number } | null;
-  onPageClick: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
-  onMouseDown: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
-  onMouseMove: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
+  currentDragBox: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    pageNumber: number;
+  } | null;
+  onPageClick: (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => void;
+  onMouseDown: (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => void;
+  onMouseMove: (
+    e: React.MouseEvent<HTMLDivElement>,
+    pageNumber: number,
+  ) => void;
   onMouseUp: (e: React.MouseEvent<HTMLDivElement>, pageNumber: number) => void;
   onDeleteHighlight: (id: string) => void;
   onToggleComment: (id: string) => void;
@@ -45,7 +60,10 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<any>(null);
-  const [pageSize, setPageSize] = useState<{ width: number; height: number }>({ width: 595, height: 842 });
+  const [pageSize, setPageSize] = useState<{ width: number; height: number }>({
+    width: 595,
+    height: 842,
+  });
   const [isRendered, setIsRendered] = useState<boolean>(false);
 
   useEffect(() => {
@@ -76,9 +94,12 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
         canvas.style.width = `${Math.floor(viewport.width)}px`;
         canvas.style.height = `${Math.floor(viewport.height)}px`;
 
-        setPageSize({ width: Math.floor(viewport.width), height: Math.floor(viewport.height) });
+        setPageSize({
+          width: Math.floor(viewport.width),
+          height: Math.floor(viewport.height),
+        });
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -96,7 +117,7 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
           setIsRendered(true);
         }
       } catch (err: any) {
-        if (err?.name !== 'RenderingCancelledException') {
+        if (err?.name !== "RenderingCancelledException") {
           console.error(`Page ${pageNumber} render error:`, err);
         }
       }
@@ -123,7 +144,11 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
       onMouseMove={(e) => onMouseMove(e, pageNumber)}
       onMouseUp={(e) => onMouseUp(e, pageNumber)}
       className={`relative bg-white shadow-2xl rounded-xs select-none transition-shadow ${
-        activeTool === 'highlight' ? 'cursor-crosshair' : activeTool === 'comment' ? 'cursor-cell' : 'cursor-default'
+        activeTool === "highlight"
+          ? "cursor-crosshair"
+          : activeTool === "comment"
+            ? "cursor-cell"
+            : "cursor-default"
       }`}
     >
       <canvas ref={canvasRef} className="block w-full h-full" />
@@ -201,9 +226,13 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
                 className="absolute top-7 left-1/2 -translate-x-1/2 w-56 p-3 bg-fluent-card-light dark:bg-fluent-card-dark text-fluent-text-primaryLight dark:text-fluent-text-primaryDark border border-fluent-border-light dark:border-fluent-border-dark rounded-xl shadow-2xl text-xs z-30 animate-in fade-in zoom-in-95"
               >
                 <div className="flex items-center justify-between mb-1.5 border-b border-fluent-border-light dark:border-fluent-border-dark pb-1">
-                  <span className="font-semibold text-fluent-accent text-[11px]">{c.author}</span>
+                  <span className="font-semibold text-fluent-accent text-[11px]">
+                    {c.author}
+                  </span>
                   <div className="flex items-center gap-1">
-                    <span className="text-[10px] opacity-50">{c.createdAt}</span>
+                    <span className="text-[10px] opacity-50">
+                      {c.createdAt}
+                    </span>
                     <button
                       onClick={() => onDeleteComment(c.id)}
                       title="Delete Comment"
@@ -213,7 +242,9 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
                     </button>
                   </div>
                 </div>
-                <p className="text-[11px] leading-relaxed break-words">{c.text}</p>
+                <p className="text-[11px] leading-relaxed break-words">
+                  {c.text}
+                </p>
               </div>
             )}
           </div>
