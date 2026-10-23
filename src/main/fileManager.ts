@@ -18,6 +18,35 @@ function isValidPath(filePath: unknown): filePath is string {
   return typeof filePath === 'string' && filePath.trim().length > 0 && !filePath.includes('\0');
 }
 
+async function scanDirectoryFiles(dirPath: string) {
+  try {
+    const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+    const supportedExts = new Set(['.md', '.markdown', '.mdown', '.mkd', '.mdx', '.pdf', '.docx', '.doc', '.txt', '.log', '.json', '.csv']);
+    const files: Array<{ name: string; path: string; size: number }> = [];
+
+    for (const entry of entries) {
+      if (files.length >= 1000) break; // Safeguard against massive directories
+      if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+
+      if (entry.isFile()) {
+        const ext = path.extname(entry.name).toLowerCase();
+        if (supportedExts.has(ext)) {
+          const fullPath = path.join(dirPath, entry.name);
+          let size = 0;
+          try {
+            const stat = await fs.promises.stat(fullPath);
+            size = stat.size;
+          } catch {}
+          files.push({ name: entry.name, path: fullPath, size });
+        }
+      }
+    }
+    return { dirPath, folderName: path.basename(dirPath), files };
+  } catch (err: any) {
+    return { dirPath, folderName: path.basename(dirPath), files: [], error: err.message };
+  }
+}
+
 export function registerFileIpcHandlers() {
   // File Open Dialog
   ipcMain.handle('file:open-dialog', async () => {
@@ -56,32 +85,29 @@ export function registerFileIpcHandlers() {
     if (result.canceled || result.filePaths.length === 0) {
       return null;
     }
-    const dirPath = result.filePaths[0];
+    return await scanDirectoryFiles(result.filePaths[0]);
+  });
+
+  // Open Folder by Direct Path (e.g. Drag and Drop)
+  ipcMain.handle('file:open-directory-path', async (_event, dirPath: string) => {
+    if (!isValidPath(dirPath) || !fs.existsSync(dirPath)) return null;
+    return await scanDirectoryFiles(dirPath);
+  });
+
+  // Check Path Info (Directory vs File)
+  ipcMain.handle('file:get-path-info', async (_event, targetPath: string) => {
+    if (!isValidPath(targetPath) || !fs.existsSync(targetPath)) {
+      return { exists: false, isDirectory: false, isFile: false };
+    }
     try {
-      const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
-      const supportedExts = new Set(['.md', '.markdown', '.mdown', '.mkd', '.mdx', '.pdf', '.docx', '.doc', '.txt', '.log', '.json', '.csv']);
-      const files: Array<{ name: string; path: string; size: number }> = [];
-
-      for (const entry of entries) {
-        if (files.length >= 1000) break; // Safeguard against massive directories
-        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
-
-        if (entry.isFile()) {
-          const ext = path.extname(entry.name).toLowerCase();
-          if (supportedExts.has(ext)) {
-            const fullPath = path.join(dirPath, entry.name);
-            let size = 0;
-            try {
-              const stat = await fs.promises.stat(fullPath);
-              size = stat.size;
-            } catch {}
-            files.push({ name: entry.name, path: fullPath, size });
-          }
-        }
-      }
-      return { dirPath, folderName: path.basename(dirPath), files };
-    } catch (err: any) {
-      return { dirPath, folderName: path.basename(dirPath), files: [], error: err.message };
+      const stat = await fs.promises.stat(targetPath);
+      return {
+        exists: true,
+        isDirectory: stat.isDirectory(),
+        isFile: stat.isFile(),
+      };
+    } catch {
+      return { exists: false, isDirectory: false, isFile: false };
     }
   });
 

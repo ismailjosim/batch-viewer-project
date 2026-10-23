@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer, webUtils } from 'electron';
 
 export interface FileData {
   success: boolean;
@@ -37,6 +37,9 @@ export interface ElectronAPI {
   // File IO
   openFileDialog: () => Promise<string[] | null>;
   openDirectoryDialog: () => Promise<{ dirPath: string; folderName?: string; files: FolderFileEntry[]; error?: string } | null>;
+  openDirectoryPath: (dirPath: string) => Promise<{ dirPath: string; folderName?: string; files: FolderFileEntry[]; error?: string } | null>;
+  getPathInfo: (filePath: string) => Promise<{ exists: boolean; isDirectory: boolean; isFile: boolean }>;
+  getPathForFile: (file: File) => string;
   readFile: (filePath: string) => Promise<FileData>;
   readBinaryFile: (filePath: string) => Promise<BinaryFileData>;
   saveFile: (filePath: string, content: string) => Promise<{ success: boolean; error?: string }>;
@@ -69,6 +72,15 @@ const api: ElectronAPI = {
 
   openFileDialog: () => ipcRenderer.invoke('file:open-dialog'),
   openDirectoryDialog: () => ipcRenderer.invoke('file:open-directory-dialog'),
+  openDirectoryPath: (dirPath: string) => ipcRenderer.invoke('file:open-directory-path', dirPath),
+  getPathInfo: (filePath: string) => ipcRenderer.invoke('file:get-path-info', filePath),
+  getPathForFile: (file: File) => {
+    try {
+      return webUtils.getPathForFile(file);
+    } catch {
+      return (file as any).path || '';
+    }
+  },
   readFile: (filePath: string) => ipcRenderer.invoke('file:read', filePath),
   readBinaryFile: (filePath: string) => ipcRenderer.invoke('file:read-binary', filePath),
   saveFile: (filePath: string, content: string) => ipcRenderer.invoke('file:save', filePath, content),

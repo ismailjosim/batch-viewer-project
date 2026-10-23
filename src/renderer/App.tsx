@@ -140,18 +140,82 @@ export const App: React.FC = () => {
     }
   };
 
-  // Drag and Drop
+  // Drag and Drop (Electron 30+ webUtils API + directory drop support)
+  const dragCounterRef = useRef(0);
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current += 1;
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current = Math.max(0, dragCounterRef.current - 1);
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false);
+    }
+  };
+
   const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
+    dragCounterRef.current = 0;
     setIsDragging(false);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      const paths: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        if ((files[i] as any).path) paths.push((files[i] as any).path);
+    const fileList = e.dataTransfer.files;
+    if (!fileList || fileList.length === 0) return;
+
+    const paths: string[] = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      let p = '';
+      if (window.api?.getPathForFile) {
+        try {
+          p = window.api.getPathForFile(file);
+        } catch {}
       }
-      if (paths.length > 0) openMultipleFilesFromDisk(paths);
+      if (!p && (file as any).path) {
+        p = (file as any).path;
+      }
+      if (p) paths.push(p);
     }
+
+    if (paths.length === 0) return;
+
+    // Check if single dropped item is a folder
+    if (paths.length === 1 && window.api?.getPathInfo) {
+      const info = await window.api.getPathInfo(paths[0]);
+      if (info.isDirectory && window.api.openDirectoryPath) {
+        const res = await window.api.openDirectoryPath(paths[0]);
+        if (res && res.files && res.files.length > 0) {
+          const items: FolderFileItem[] = res.files.map((f: any) => ({
+            name: f.name,
+            path: f.path,
+            fileType: detectFileType(f.path),
+            size: f.size,
+          }));
+          const folderName = res.folderName || paths[0].split(/[\/\\]/).pop() || 'Workspace';
+          setWorkspaceFolder({ dirPath: res.dirPath, folderName, files: items });
+          setIsSidebarOpen(true);
+          if (tabs.length === 0 && items.length > 0) {
+            await openFileFromDisk(items[0].path);
+          } else {
+            setUpdateToast(`Opened folder "${folderName}" (${items.length} documents)`);
+            setTimeout(() => setUpdateToast(null), 3000);
+          }
+          return;
+        }
+      }
+    }
+
+    // Open dropped file(s)
+    openMultipleFilesFromDisk(paths);
   };
 
   // Keyboard Shortcuts Hook
@@ -173,8 +237,9 @@ export const App: React.FC = () => {
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-      onDragLeave={() => setIsDragging(false)}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className="h-screen w-screen flex flex-col overflow-hidden bg-fluent-bg-light dark:bg-fluent-bg-dark text-fluent-text-primaryLight dark:text-fluent-text-primaryDark relative font-sans antialiased"
     >
