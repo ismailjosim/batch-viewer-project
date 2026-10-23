@@ -1,6 +1,8 @@
 {
   "appId": "com.batchstudio.batchviewer",
   "productName": "Batch-Viewer",
+  "npmRebuild": false,
+  "nodeGypRebuild": false,
   "directories": {
     "output": "release"
   },
