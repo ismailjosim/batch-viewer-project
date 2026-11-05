@@ -7,6 +7,7 @@ import { SearchBar } from './components/SearchBar';
 import { StatusBar } from './components/StatusBar';
 import { DragDropOverlay } from './components/common/DragDropOverlay';
 import { ToastNotification } from './components/common/ToastNotification';
+import { UpdateNotification } from './components/UpdateNotification';
 import { WorkspaceFolder, FolderFileItem, detectFileType } from './types';
 import { useRecentFiles } from './hooks/useRecentFiles';
 import { useDocumentTabs } from './hooks/useDocumentTabs';
@@ -31,6 +32,8 @@ export const App: React.FC = () => {
     handleCloseTabsToRight,
     handleCloseAllTabs,
     handleContentChange,
+    handleUndoContent,
+    handleRedoContent,
     handlePdfAnnotationsChange,
     handleSaveFile,
     handleSavePdf,
@@ -44,6 +47,7 @@ export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [updateToast, setUpdateToast] = useState<string | null>(null);
+  const [manualCheckTrigger, setManualCheckTrigger] = useState<number>(0);
   const [externalScrollPct, setExternalScrollPct] = useState<number | null>(null);
 
   const viewerContainerRef = useRef<HTMLDivElement>(null);
@@ -252,6 +256,10 @@ export const App: React.FC = () => {
             onAnnotationsChange={handlePdfAnnotationsChange}
             onSavePdf={handleSavePdf}
             onContentChange={handleContentChange}
+            canUndoContent={!!activeTab?.contentUndoStack.length}
+            canRedoContent={!!activeTab?.contentRedoStack.length}
+            onUndoContent={handleUndoContent}
+            onRedoContent={handleRedoContent}
             onExportPDF={handleExportPDF}
             onEditorScroll={handleEditorScroll}
             onViewerScroll={handleViewerScroll}
@@ -279,10 +287,7 @@ export const App: React.FC = () => {
         onExportPDF={handleExportPDF}
         onExportHTML={activeTab?.fileType === 'markdown' ? handleExportHTML : undefined}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onCheckUpdates={() => {
-          setUpdateToast('Batch-Viewer v1.0.2 is up to date (Latest Stable Release)');
-          setTimeout(() => setUpdateToast(null), 4000);
-        }}
+        onCheckUpdates={() => setManualCheckTrigger((prev) => prev + 1)}
       />
 
       {/* Search Bar Modal */}
@@ -292,6 +297,15 @@ export const App: React.FC = () => {
 
       {/* Drag & Drop Visual Indicator */}
       <DragDropOverlay isDragging={isDragging} />
+
+      {/* Auto-Update Interactive Notification Banner */}
+      <UpdateNotification
+        manualCheckTrigger={manualCheckTrigger}
+        onToastMessage={(msg) => {
+          setUpdateToast(msg);
+          setTimeout(() => setUpdateToast(null), 4000);
+        }}
+      />
 
       {/* Toast Notification */}
       <ToastNotification message={updateToast} onClose={() => setUpdateToast(null)} />

@@ -1,12 +1,25 @@
 import React, { useRef, useMemo } from 'react';
+import { UndoRedoControls } from './common/UndoRedoControls';
 
 interface TextEditorProps {
   content: string;
   onChange: (value: string) => void;
   zoom: number;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
-export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom }) => {
+export const TextEditor: React.FC<TextEditorProps> = ({
+  content,
+  onChange,
+  zoom,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const lineCount = useMemo(() => {
@@ -16,6 +29,20 @@ export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
+
+    if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+      const key = e.key.toLowerCase();
+      if (key === 'z') {
+        e.preventDefault();
+        (e.shiftKey ? onRedo : onUndo)();
+        return;
+      }
+      if (key === 'y') {
+        e.preventDefault();
+        onRedo();
+        return;
+      }
+    }
 
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -44,27 +71,38 @@ export const TextEditor: React.FC<TextEditorProps> = ({ content, onChange, zoom 
   return (
     <div
       style={{ fontSize: `${zoom * 100}%` }}
-      className="flex h-full flex-1 overflow-hidden bg-fluent-card-light/40 font-mono dark:bg-fluent-card-dark/40"
+      className="flex h-full flex-1 flex-col overflow-hidden bg-fluent-card-light/40 font-mono dark:bg-fluent-card-dark/40"
     >
-      {/* Line Numbers */}
-      <div className="w-14 shrink-0 select-none overflow-hidden border-r border-fluent-border-light bg-black/5 py-6 pr-3 text-right text-xs opacity-35 dark:border-fluent-border-dark dark:bg-black/10">
-        {Array.from({ length: lineCount }).map((_, i) => (
-          <div key={i} className="leading-6">
-            {i + 1}
-          </div>
-        ))}
+      <div className="flex h-9 shrink-0 items-center border-b border-fluent-border-light bg-fluent-card-light/90 px-3 text-xs dark:border-fluent-border-dark dark:bg-fluent-card-dark/90">
+        <UndoRedoControls
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={onUndo}
+          onRedo={onRedo}
+        />
       </div>
 
-      {/* Plain text area */}
-      <textarea
-        ref={textareaRef}
-        value={content}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Type text content here..."
-        spellCheck={false}
-        className="h-full flex-1 select-text resize-none overflow-y-auto bg-transparent p-6 font-mono text-sm leading-6 text-fluent-text-primaryLight outline-none placeholder:opacity-40 dark:text-fluent-text-primaryDark"
-      />
+      <div className="flex flex-1 overflow-hidden">
+        {/* Line Numbers */}
+        <div className="w-14 shrink-0 select-none overflow-hidden border-r border-fluent-border-light bg-black/5 py-6 pr-3 text-right text-xs opacity-35 dark:border-fluent-border-dark dark:bg-black/10">
+          {Array.from({ length: lineCount }).map((_, i) => (
+            <div key={i} className="leading-6">
+              {i + 1}
+            </div>
+          ))}
+        </div>
+
+        {/* Plain text area */}
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type text content here..."
+          spellCheck={false}
+          className="h-full flex-1 select-text resize-none overflow-y-auto bg-transparent p-6 font-mono text-sm leading-6 text-fluent-text-primaryLight outline-none placeholder:opacity-40 dark:text-fluent-text-primaryDark"
+        />
+      </div>
     </div>
   );
 };

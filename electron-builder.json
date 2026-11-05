@@ -6,6 +6,11 @@
   "directories": {
     "output": "release"
   },
+  "publish": {
+    "provider": "github",
+    "owner": "ismailjosim",
+    "repo": "batch-viewer-project"
+  },
   "files": ["dist/**/*", "dist-electron/**/*", "build/**/*"],
   "win": {
     "icon": "build/icon.ico",
@@ -20,36 +25,42 @@
         "ext": "md",
         "name": "Markdown Document",
         "description": "Markdown Document",
+        "icon": "build/icons/md.ico",
         "role": "Editor"
       },
       {
         "ext": "markdown",
         "name": "Markdown Document",
         "description": "Markdown Document",
+        "icon": "build/icons/md.ico",
         "role": "Editor"
       },
       {
         "ext": "mdown",
         "name": "Markdown Document",
         "description": "Markdown Document",
+        "icon": "build/icons/md.ico",
         "role": "Editor"
       },
       {
         "ext": "pdf",
         "name": "PDF Document",
         "description": "PDF Document",
+        "icon": "build/icons/pdf.ico",
         "role": "Editor"
       },
       {
         "ext": "docx",
         "name": "Word Document",
         "description": "Microsoft Word Document",
+        "icon": "build/icons/docx.ico",
         "role": "Editor"
       },
       {
         "ext": "txt",
         "name": "Text Document",
         "description": "Plain Text Document",
+        "icon": "build/icons/txt.ico",
         "role": "Editor"
       }
     ]

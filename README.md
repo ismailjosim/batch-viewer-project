@@ -46,6 +46,7 @@
 - **Three Viewing Modes**: Toggle between pure Reader View, full Editor View, or synchronized Split View (`Ctrl + E`).
 - **Synchronized Scrolling**: Dual-pane editor and preview stay strictly synchronized as you scroll.
 - **Formatting Toolbar**: One-click insertions for Headings (H1–H3), Bold, Italic, Strikethrough, Task Lists (`- [ ]`), Blockquotes, Code blocks, Tables, Links, and Images.
+- **Undo & Redo**: Per-tab edit history in Markdown, text, and Word edit modes, with toolbar controls and `Ctrl+Z` / `Ctrl+Y` shortcuts.
 - **Rich GFM & Extensions**:
   - 📐 **LaTeX Math**: Render formulas and equations via KaTeX (`$E=mc^2$` and `$$\sum_{i=1}^n i$$`).
   - 📊 **Mermaid Diagrams**: Interactive flowcharts, sequence diagrams, state machines, and Gantt charts.
@@ -88,6 +89,8 @@
 | <kbd>Ctrl</kbd> + <kbd>O</kbd> | Open File(s) from disk |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> | Open Workspace Folder |
 | <kbd>Ctrl</kbd> + <kbd>S</kbd> | Save changes (Burns annotations into PDF) |
+| <kbd>Ctrl</kbd> + <kbd>Z</kbd> | Undo the last edit |
+| <kbd>Ctrl</kbd> + <kbd>Y</kbd> / <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> | Redo the last undone edit |
 | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Save As new file |
 | <kbd>Ctrl</kbd> + <kbd>N</kbd> | Create new document tab |
 | <kbd>Ctrl</kbd> + <kbd>W</kbd> | Close active tab |

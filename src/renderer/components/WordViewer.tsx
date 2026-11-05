@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import mammoth from 'mammoth';
 import DOMPurify from 'dompurify';
 import { FileDown, Edit3, Eye } from 'lucide-react';
+import { UndoRedoControls } from './common/UndoRedoControls';
 
 interface WordViewerProps {
   base64Data?: string;
@@ -10,6 +11,10 @@ interface WordViewerProps {
   zoom: number;
   onContentChange: (newHtml: string) => void;
   onSaveAsPdf: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 export const WordViewer: React.FC<WordViewerProps> = ({
@@ -19,6 +24,10 @@ export const WordViewer: React.FC<WordViewerProps> = ({
   zoom,
   onContentChange,
   onSaveAsPdf,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 }) => {
   const [htmlContent, setHtmlContent] = useState<string>(() =>
     initialHtml ? DOMPurify.sanitize(initialHtml) : ''
@@ -83,6 +92,18 @@ export const WordViewer: React.FC<WordViewerProps> = ({
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+    const key = event.key.toLowerCase();
+    if (key === 'z') {
+      event.preventDefault();
+      (event.shiftKey ? onRedo : onUndo)();
+    } else if (key === 'y') {
+      event.preventDefault();
+      onRedo();
+    }
+  };
+
   return (
     <div className="flex h-full flex-1 select-text flex-col overflow-hidden bg-[#eef1f5] dark:bg-[#1a1c23]">
       {/* Word Controls Toolbar */}
@@ -95,6 +116,14 @@ export const WordViewer: React.FC<WordViewerProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {isEditable && (
+            <UndoRedoControls
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={onUndo}
+              onRedo={onRedo}
+            />
+          )}
           <button
             onClick={() => setIsEditable(!isEditable)}
             title={isEditable ? 'Switch to Reader Mode' : 'Switch to Edit Mode'}
@@ -143,6 +172,7 @@ export const WordViewer: React.FC<WordViewerProps> = ({
               ref={editorRef}
               contentEditable={isEditable}
               onInput={handleInput}
+              onKeyDown={handleKeyDown}
               suppressContentEditableWarning={true}
               style={{
                 width: '800px',

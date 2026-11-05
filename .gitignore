@@ -8,8 +8,10 @@ dist/
 dist-electron/
 release/
 out/
-build/
+build/*
 !build/icon.ico
+!build/icons/
+!build/icons/**
 
 # Logs
 npm-debug.log*

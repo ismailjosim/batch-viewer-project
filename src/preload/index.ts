@@ -26,6 +26,19 @@ export interface FolderFileEntry {
   size: number;
 }
 
+export interface UpdateInfoData {
+  version: string;
+  releaseDate?: string;
+  releaseNotes?: string | Array<{ version: string; note: string | null }>;
+}
+
+export interface UpdateProgressData {
+  percent: number;
+  bytesPerSecond?: number;
+  transferred?: number;
+  total?: number;
+}
+
 export interface ElectronAPI {
   // Window
   minimize: () => Promise<void>;
@@ -75,6 +88,15 @@ export interface ElectronAPI {
   onFileOpenedFromCLI: (callback: (filePath: string) => void) => () => void;
   onFilesOpenedFromCLI: (callback: (filePaths: string[]) => void) => () => void;
   onFileChangedOnDisk: (callback: (filePath: string) => void) => () => void;
+
+  // Auto Updater
+  checkForUpdates: () => Promise<{ success: boolean; updateInfo?: any; error?: string }>;
+  startUpdateDownload: () => Promise<{ success: boolean; error?: string; alreadyDownloading?: boolean }>;
+  installUpdateNow: () => Promise<boolean>;
+  onUpdateAvailable: (callback: (info: UpdateInfoData) => void) => () => void;
+  onUpdateProgress: (callback: (progress: UpdateProgressData) => void) => () => void;
+  onUpdateDownloaded: (callback: (info: { version: string }) => void) => () => void;
+  onUpdateError: (callback: (error: string) => void) => () => void;
 }
 
 const api: ElectronAPI = {
@@ -130,6 +152,31 @@ const api: ElectronAPI = {
     const subscription = (_event: any, filePath: string) => callback(filePath);
     ipcRenderer.on('file:changed-on-disk', subscription);
     return () => ipcRenderer.removeListener('file:changed-on-disk', subscription);
+  },
+
+  // Auto Updater
+  checkForUpdates: () => ipcRenderer.invoke('update:check'),
+  startUpdateDownload: () => ipcRenderer.invoke('update:start-download'),
+  installUpdateNow: () => ipcRenderer.invoke('update:install-now'),
+  onUpdateAvailable: (callback) => {
+    const subscription = (_event: any, data: UpdateInfoData) => callback(data);
+    ipcRenderer.on('update:available', subscription);
+    return () => ipcRenderer.removeListener('update:available', subscription);
+  },
+  onUpdateProgress: (callback) => {
+    const subscription = (_event: any, data: UpdateProgressData) => callback(data);
+    ipcRenderer.on('update:progress', subscription);
+    return () => ipcRenderer.removeListener('update:progress', subscription);
+  },
+  onUpdateDownloaded: (callback) => {
+    const subscription = (_event: any, data: { version: string }) => callback(data);
+    ipcRenderer.on('update:downloaded', subscription);
+    return () => ipcRenderer.removeListener('update:downloaded', subscription);
+  },
+  onUpdateError: (callback) => {
+    const subscription = (_event: any, errorMsg: string) => callback(errorMsg);
+    ipcRenderer.on('update:error', subscription);
+    return () => ipcRenderer.removeListener('update:error', subscription);
   },
 };
 

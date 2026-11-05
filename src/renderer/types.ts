@@ -51,6 +51,9 @@ export interface DocumentTab {
   base64Data?: string; // Raw binary for PDF
   dirName?: string;
   isDirty: boolean;
+  contentUndoStack: string[];
+  contentRedoStack: string[];
+  lastContentEditAt: number;
   pdfHighlights?: PdfHighlight[];
   pdfComments?: PdfComment[];
   zoom?: number;

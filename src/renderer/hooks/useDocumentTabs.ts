@@ -1,6 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { DocumentTab, detectFileType, PdfHighlight, PdfComment, DocumentType } from '../types';
 
+const MAX_CONTENT_UNDO_STEPS = 100;
+const CONTENT_UNDO_GROUP_INTERVAL_MS = 500;
+
 interface UseDocumentTabsProps {
   onAddToRecents: (filePath: string, fileName: string, fileType: DocumentType) => void;
 }
@@ -24,10 +27,19 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
       setTabs((prev) =>
         prev.map((t) => {
           if (t.id === activeTabId) {
+            if (t.content === newContent) return t;
+            const now = Date.now();
+            const startsNewUndoGroup =
+              now - t.lastContentEditAt > CONTENT_UNDO_GROUP_INTERVAL_MS;
             return {
               ...t,
               content: newContent,
               isDirty: newContent !== t.originalContent,
+              contentUndoStack: startsNewUndoGroup
+                ? [...t.contentUndoStack, t.content].slice(-MAX_CONTENT_UNDO_STEPS)
+                : t.contentUndoStack,
+              contentRedoStack: [],
+              lastContentEditAt: now,
             };
           }
           return t;
@@ -36,6 +48,40 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
     },
     [activeTabId]
   );
+
+  const handleUndoContent = useCallback(() => {
+    setTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id !== activeTabId || tab.contentUndoStack.length === 0) return tab;
+        const content = tab.contentUndoStack[tab.contentUndoStack.length - 1];
+        return {
+          ...tab,
+          content,
+          isDirty: content !== tab.originalContent,
+          contentUndoStack: tab.contentUndoStack.slice(0, -1),
+          contentRedoStack: [...tab.contentRedoStack, tab.content],
+          lastContentEditAt: 0,
+        };
+      })
+    );
+  }, [activeTabId]);
+
+  const handleRedoContent = useCallback(() => {
+    setTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id !== activeTabId || tab.contentRedoStack.length === 0) return tab;
+        const content = tab.contentRedoStack[tab.contentRedoStack.length - 1];
+        return {
+          ...tab,
+          content,
+          isDirty: content !== tab.originalContent,
+          contentUndoStack: [...tab.contentUndoStack, tab.content].slice(-MAX_CONTENT_UNDO_STEPS),
+          contentRedoStack: tab.contentRedoStack.slice(0, -1),
+          lastContentEditAt: 0,
+        };
+      })
+    );
+  }, [activeTabId]);
 
   // Update PDF annotations of active tab
   const handlePdfAnnotationsChange = useCallback(
@@ -96,6 +142,9 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
             base64Data,
             dirName: res.dirName,
             isDirty: false,
+            contentUndoStack: [],
+            contentRedoStack: [],
+            lastContentEditAt: 0,
             pdfHighlights: [],
             pdfComments: [],
             zoom: 1.0,
@@ -150,11 +199,18 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
           if (t.filePath === changedPath && !t.isDirty) {
             if (t.fileType === 'markdown' || t.fileType === 'text') {
               window.api.readFile(changedPath).then((res) => {
-                if (res.success && res.content) {
+                if (res.success && res.content !== undefined) {
                   setTabs((curr) =>
                     curr.map((item) =>
                       item.id === t.id
-                        ? { ...item, content: res.content!, originalContent: res.content! }
+                        ? {
+                            ...item,
+                            content: res.content!,
+                            originalContent: res.content!,
+                            contentUndoStack: [],
+                            contentRedoStack: [],
+                            lastContentEditAt: 0,
+                          }
                         : item
                     )
                   );
@@ -185,6 +241,9 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
       content: '# New Document\n\nStart typing here...\n',
       originalContent: '',
       isDirty: true,
+      contentUndoStack: [],
+      contentRedoStack: [],
+      lastContentEditAt: 0,
       zoom: 1.0,
     };
     setTabs((prev) => [...prev, newTab]);
@@ -323,6 +382,8 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
     handleCloseTabsToRight,
     handleCloseAllTabs,
     handleContentChange,
+    handleUndoContent,
+    handleRedoContent,
     handlePdfAnnotationsChange,
     handleSaveFile,
     handleSavePdf,

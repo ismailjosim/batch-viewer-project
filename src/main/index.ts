@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { createMainWindow, getMainWindow, registerWindowIpcHandlers } from './windowManager';
 import { registerFileIpcHandlers, closeWatcher } from './fileManager';
+import { registerAutoUpdater, registerUpdateIpcHandlers } from './autoUpdater';
 
 // Windows Application UserModelID
 if (process.platform === 'win32') {
@@ -51,12 +52,14 @@ if (!gotTheLock) {
   app.whenReady().then(() => {
     registerWindowIpcHandlers();
     registerFileIpcHandlers();
+    registerUpdateIpcHandlers();
 
     ipcMain.handle('file:get-initial-files', () => {
       return pendingFilePaths;
     });
 
-    createMainWindow(pendingFilePaths);
+    const win = createMainWindow(pendingFilePaths);
+    registerAutoUpdater(win);
   });
 }
 

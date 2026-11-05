@@ -7,6 +7,10 @@ interface EditorProps {
   zoom: number;
   onScroll?: (pct: number) => void;
   externalScrollPct?: number | null;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 export const Editor: React.FC<EditorProps> = ({
@@ -15,6 +19,10 @@ export const Editor: React.FC<EditorProps> = ({
   zoom,
   onScroll,
   externalScrollPct,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
@@ -82,6 +90,20 @@ export const Editor: React.FC<EditorProps> = ({
     const textarea = textareaRef.current;
     if (!textarea) return;
 
+    if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+      const key = e.key.toLowerCase();
+      if (key === 'z') {
+        e.preventDefault();
+        (e.shiftKey ? onRedo : onUndo)();
+        return;
+      }
+      if (key === 'y') {
+        e.preventDefault();
+        onRedo();
+        return;
+      }
+    }
+
     // Tab key indentation
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -130,7 +152,13 @@ export const Editor: React.FC<EditorProps> = ({
   return (
     <div className="flex h-full flex-1 flex-col overflow-hidden">
       {/* Markdown Formatting Toolbar */}
-      <MarkdownToolbar onInsert={handleInsert} />
+      <MarkdownToolbar
+        onInsert={handleInsert}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={onUndo}
+        onRedo={onRedo}
+      />
 
       {/* Main Editing Area */}
       <div

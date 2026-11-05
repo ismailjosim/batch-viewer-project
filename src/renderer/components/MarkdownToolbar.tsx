@@ -19,14 +19,34 @@ import {
   Sigma,
   GitFork,
 } from 'lucide-react';
+import { UndoRedoControls } from './common/UndoRedoControls';
 
 interface MarkdownToolbarProps {
   onInsert: (prefix: string, suffix?: string, defaultText?: string) => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
-export const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({ onInsert }) => {
+export const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({
+  onInsert,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+}) => {
   return (
     <div className="scrollbar-none flex h-9 shrink-0 select-none items-center gap-0.5 overflow-x-auto border-b border-fluent-border-light bg-fluent-card-light/90 px-3 text-xs dark:border-fluent-border-dark dark:bg-fluent-card-dark/90">
+      <div className="mr-1 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
+        <UndoRedoControls
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={onUndo}
+          onRedo={onRedo}
+        />
+      </div>
+
       {/* Headings */}
       <div className="mr-1 flex items-center gap-0.5 border-r border-fluent-border-light pr-1 dark:border-fluent-border-dark">
         <button

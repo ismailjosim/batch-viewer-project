@@ -25,6 +25,10 @@ interface DocumentContentAreaProps {
   onAnnotationsChange: (highlights: PdfHighlight[], comments: PdfComment[]) => void;
   onSavePdf: (modifiedBase64: string) => Promise<void>;
   onContentChange: (content: string) => void;
+  canUndoContent: boolean;
+  canRedoContent: boolean;
+  onUndoContent: () => void;
+  onRedoContent: () => void;
   onExportPDF: () => void;
   onEditorScroll: (pct: number) => void;
   onViewerScroll: (e: React.UIEvent<HTMLDivElement>) => void;
@@ -48,6 +52,10 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
   onAnnotationsChange,
   onSavePdf,
   onContentChange,
+  canUndoContent,
+  canRedoContent,
+  onUndoContent,
+  onRedoContent,
   onExportPDF,
   onEditorScroll,
   onViewerScroll,
@@ -89,12 +97,26 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
         zoom={zoom}
         onContentChange={onContentChange}
         onSaveAsPdf={onExportPDF}
+        canUndo={canUndoContent}
+        canRedo={canRedoContent}
+        onUndo={onUndoContent}
+        onRedo={onRedoContent}
       />
     );
   }
 
   if (activeTab.fileType === 'text') {
-    return <TextEditor content={activeTab.content} onChange={onContentChange} zoom={zoom} />;
+    return (
+      <TextEditor
+        content={activeTab.content}
+        onChange={onContentChange}
+        zoom={zoom}
+        canUndo={canUndoContent}
+        canRedo={canRedoContent}
+        onUndo={onUndoContent}
+        onRedo={onRedoContent}
+      />
+    );
   }
 
   return (
@@ -111,6 +133,10 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
             content={activeTab.content || ''}
             onChange={onContentChange}
             zoom={zoom}
+            canUndo={canUndoContent}
+            canRedo={canRedoContent}
+            onUndo={onUndoContent}
+            onRedo={onRedoContent}
             onScroll={viewMode === 'split' ? onEditorScroll : undefined}
             externalScrollPct={viewMode === 'split' ? externalScrollPct : null}
           />
