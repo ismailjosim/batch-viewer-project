@@ -25,35 +25,35 @@
         "ext": "md",
         "name": "Markdown Document",
         "description": "Markdown Document",
-        "icon": "build/icons/md.ico",
+        "icon": "build/icons/md-icon.ico",
         "role": "Editor"
       },
       {
         "ext": "markdown",
         "name": "Markdown Document",
         "description": "Markdown Document",
-        "icon": "build/icons/md.ico",
+        "icon": "build/icons/md-icon.ico",
         "role": "Editor"
       },
       {
         "ext": "mdown",
         "name": "Markdown Document",
         "description": "Markdown Document",
-        "icon": "build/icons/md.ico",
+        "icon": "build/icons/md-icon.ico",
         "role": "Editor"
       },
       {
         "ext": "pdf",
         "name": "PDF Document",
         "description": "PDF Document",
-        "icon": "build/icons/pdf.ico",
+        "icon": "build/icons/pdf-icon.ico",
         "role": "Editor"
       },
       {
         "ext": "docx",
         "name": "Word Document",
         "description": "Microsoft Word Document",
-        "icon": "build/icons/docx.ico",
+        "icon": "build/icons/word-icon.ico",
         "role": "Editor"
       },
       {
