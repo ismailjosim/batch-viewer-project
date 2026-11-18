@@ -35,10 +35,24 @@
 
 ### 📕 2. PDF Annotator, Highlighter & Comments
 - **High-Resolution Canvas**: Crisp page rendering with responsive zoom (`50%` to `300%`), fit-to-width, and continuous page scrolling.
-- **Visual Highlighter**: Highlight text selections or drag rectangular bounding boxes with customizable colors (Yellow, Blue, Green, Pink, Violet).
+- **Text Selection & Annotations**: Select/copy PDF text, highlight selected text or drag rectangular areas, and underline selections.
 - **Sticky Page Comments**: Click anywhere on a page to attach a comment pin.
 - **Interactive Notes Drawer**: Slide-over panel summarizing all highlights and comments with jump-to-page navigation and deletion.
 - **Permanent Binary Saving (`Ctrl + S`)**: Uses `pdf-lib` to burn highlights and comments permanently into the `.pdf` file so other PDF viewers (Adobe Acrobat, Edge, Chrome) see your annotations.
+- **Navigation & Search**: Search PDF text, browse lazy-rendered page thumbnails, save page bookmarks, fit a whole page, rotate, and print.
+- **Page & Form Tools**: Reorder/delete pages, merge PDFs, extract page ranges, fill supported AcroForm fields, and place a typed visual signature.
+- **Scanned PDF OCR**: Optional English and Bangla OCR adds selectable/searchable text for scanned pages.
+
+### 🧭 PDF Viewer Implementation Plan
+
+The PDF improvements are delivered in these stages:
+
+1. **Reading and navigation — complete:** PDF.js text selection/copy, in-document search with result navigation, lazy page thumbnails, persistent bookmarks, fit-to-page, rotation, printing, and keyboard page navigation.
+2. **Review and annotation — complete:** Text and area highlights, underlines, comments, and annotation undo/redo; saved markups are embedded in the PDF.
+3. **Document workflows — complete:** Reorder/delete pages, merge PDFs, extract page ranges, fill supported AcroForm fields, and place typed visual signatures.
+4. **Scanned documents and accessibility — complete:** English/Bangla OCR text overlays, search, copy/select, and keyboard-accessible page navigation.
+
+**Limitations:** OCR runs on-device and does not upload PDF pages, but Tesseract worker/core and selected language data may be downloaded the first time OCR is used. OCR results are currently session-only and are not written into the PDF. XFA forms and certificate-backed digital signatures are not supported; the typed signature is a visual mark, not a cryptographic signature.
 
 ---
 
@@ -99,6 +113,8 @@
 | <kbd>Ctrl</kbd> + <kbd>E</kbd> | Cycle Markdown mode (Reader ➔ Split ➔ Editor) |
 | <kbd>Ctrl</kbd> + <kbd>B</kbd> | Toggle Sidebar (Files / Outline) |
 | <kbd>Ctrl</kbd> + <kbd>F</kbd> | Find in document |
+| <kbd>Page Up</kbd> / <kbd>Page Down</kbd> | Previous / next PDF page |
+| <kbd>Home</kbd> / <kbd>End</kbd> | First / last PDF page |
 | <kbd>Ctrl</kbd> + <kbd>P</kbd> | Print / Export to PDF |
 | <kbd>Ctrl</kbd> + <kbd>+</kbd> / <kbd>=</kbd> | Zoom In |
 | <kbd>Ctrl</kbd> + <kbd>-</kbd> | Zoom Out |
@@ -108,7 +124,7 @@
 
 ## 🏗️ Architecture & Clean Code
 
-The codebase is built following clean modular design principles with strict separation of concerns, keeping all components under 300 lines:
+The codebase follows modular design principles with a separation of concerns across the Electron main process, preload bridge, and React renderer:
 
 ```
 batch-viewer/

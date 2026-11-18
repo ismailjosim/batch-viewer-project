@@ -8,6 +8,15 @@ import {
   List,
   Save,
   Check,
+  Search,
+  BookmarkPlus,
+  RotateCw,
+  Printer,
+  Expand,
+  Underline,
+  Undo2,
+  Redo2,
+  PenLine,
 } from 'lucide-react';
 
 interface PdfToolbarProps {
@@ -15,20 +24,34 @@ interface PdfToolbarProps {
   numPages: number;
   pageInput: string;
   isLoading: boolean;
-  activeTool: 'select' | 'highlight' | 'comment';
+  activeTool: 'select' | 'highlight' | 'text-highlight' | 'underline' | 'comment' | 'signature';
   highlightColor: string;
   isNotesDrawerOpen: boolean;
   totalAnnotations: number;
   isSaving: boolean;
   saveSuccess: boolean;
+  isNavigationOpen: boolean;
+  isSearchOpen: boolean;
+  fitPage: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  documentTools: React.ReactNode;
   onPageInputChange: (value: string) => void;
   onPageInputCommit: () => void;
   onPrevPage: () => void;
   onNextPage: () => void;
-  onSelectTool: (tool: 'select' | 'highlight' | 'comment') => void;
+  onSelectTool: (tool: 'select' | 'highlight' | 'text-highlight' | 'underline' | 'comment' | 'signature') => void;
   onSelectColor: (color: string) => void;
   onToggleNotesDrawer: () => void;
   onSave: () => void;
+  onToggleNavigation: () => void;
+  onToggleSearch: () => void;
+  onToggleFitPage: () => void;
+  onRotatePage: () => void;
+  onPrint: () => void;
+  onAddBookmark: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 const HIGHLIGHT_COLORS = [
@@ -50,6 +73,12 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
   totalAnnotations,
   isSaving,
   saveSuccess,
+  isNavigationOpen,
+  isSearchOpen,
+  fitPage,
+  canUndo,
+  canRedo,
+  documentTools,
   onPageInputChange,
   onPageInputCommit,
   onPrevPage,
@@ -58,9 +87,17 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
   onSelectColor,
   onToggleNotesDrawer,
   onSave,
+  onToggleNavigation,
+  onToggleSearch,
+  onToggleFitPage,
+  onRotatePage,
+  onPrint,
+  onAddBookmark,
+  onUndo,
+  onRedo,
 }) => {
   return (
-    <div className="z-20 flex h-10 shrink-0 select-none items-center justify-between border-b border-fluent-border-light bg-fluent-card-light/95 px-4 text-xs shadow-sm dark:border-fluent-border-dark dark:bg-fluent-card-dark/95">
+    <div className="pdf-toolbar z-20 flex h-10 shrink-0 select-none items-center justify-between border-b border-fluent-border-light bg-fluent-card-light/95 px-4 text-xs shadow-sm dark:border-fluent-border-dark dark:bg-fluent-card-dark/95">
       {/* Page Navigation */}
       <div className="flex items-center gap-1.5">
         <button
@@ -121,7 +158,33 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
           <span className="hidden sm:inline">Highlight</span>
         </button>
 
-        {activeTool === 'highlight' && (
+        <button
+          onClick={() => onSelectTool('text-highlight')}
+          title="Select text to highlight"
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
+            activeTool === 'text-highlight'
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
+          }`}
+        >
+          <Highlighter className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Text</span>
+        </button>
+
+        <button
+          onClick={() => onSelectTool('underline')}
+          title="Select text to underline"
+          className={`flex items-center gap-1.5 rounded px-2.5 py-1 transition-all ${
+            activeTool === 'underline'
+              ? 'bg-fluent-accent text-white shadow-sm'
+              : 'text-fluent-text-secondaryLight hover:bg-black/5 dark:text-fluent-text-secondaryDark dark:hover:bg-white/10'
+          }`}
+        >
+          <Underline className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Underline</span>
+        </button>
+
+        {(activeTool === 'highlight' || activeTool === 'text-highlight') && (
           <div className="flex items-center gap-1 border-l border-fluent-border-light px-1.5 dark:border-fluent-border-dark">
             {HIGHLIGHT_COLORS.map((c) => (
               <button
@@ -150,6 +213,98 @@ export const PdfToolbar: React.FC<PdfToolbarProps> = ({
         >
           <MessageSquare className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Comment</span>
+        </button>
+        {activeTool === 'signature' && (
+          <button
+            type="button"
+            onClick={() => onSelectTool('select')}
+            title="Cancel signature placement"
+            className="flex items-center gap-1.5 rounded bg-fluent-accent px-2.5 py-1 text-white shadow-sm"
+          >
+            <PenLine className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Click to Sign</span>
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-1">
+        <div className="relative">{documentTools}</div>
+        <button
+          type="button"
+          onClick={onUndo}
+          disabled={!canUndo}
+          title="Undo annotation (Ctrl+Z)"
+          aria-label="Undo annotation"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 disabled:opacity-40 dark:hover:bg-white/10"
+        >
+          <Undo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onRedo}
+          disabled={!canRedo}
+          title="Redo annotation (Ctrl+Y)"
+          aria-label="Redo annotation"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 disabled:opacity-40 dark:hover:bg-white/10"
+        >
+          <Redo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onToggleNavigation}
+          aria-pressed={isNavigationOpen}
+          title="Pages and bookmarks"
+          className={`rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10 ${
+            isNavigationOpen ? 'text-fluent-accent' : ''
+          }`}
+        >
+          <List className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onToggleSearch}
+          aria-pressed={isSearchOpen}
+          title="Find in PDF (Ctrl+F)"
+          className={`rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10 ${
+            isSearchOpen ? 'text-fluent-accent' : ''
+          }`}
+        >
+          <Search className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onAddBookmark}
+          title="Bookmark current page"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+        >
+          <BookmarkPlus className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onToggleFitPage}
+          aria-pressed={fitPage}
+          title={fitPage ? 'Fit width' : 'Fit page'}
+          className={`rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10 ${
+            fitPage ? 'text-fluent-accent' : ''
+          }`}
+        >
+          <Expand className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onRotatePage}
+          title="Rotate all pages clockwise"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+        >
+          <RotateCw className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onPrint}
+          title="Print PDF"
+          className="rounded p-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/10"
+        >
+          <Printer className="h-3.5 w-3.5" />
         </button>
       </div>
 

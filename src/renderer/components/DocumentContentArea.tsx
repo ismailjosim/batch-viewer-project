@@ -5,7 +5,7 @@ import { WordViewer } from './WordViewer';
 import { TextEditor } from './TextEditor';
 import { Editor } from './Editor';
 import { MarkdownViewer } from './MarkdownViewer';
-import { DocumentTab, RecentDocument, PdfHighlight, PdfComment } from '../types';
+import { DocumentTab, RecentDocument, PdfHighlight, PdfComment, PdfSignature } from '../types';
 
 interface DocumentContentAreaProps {
   isOverviewActive: boolean;
@@ -23,7 +23,11 @@ interface DocumentContentAreaProps {
   onRemoveRecent: (filePath: string, e: React.MouseEvent) => void;
   onClearRecent: () => void;
   onAnnotationsChange: (highlights: PdfHighlight[], comments: PdfComment[]) => void;
-  onSavePdf: (modifiedBase64: string) => Promise<void>;
+  onPdfDocumentChange: (base64: string, pageOrder?: number[]) => void;
+  onPdfSignaturesChange: (signatures: PdfSignature[]) => void;
+  onPdfRotationChange: (rotation: number) => void;
+  onSavePdf: (modifiedBase64: string) => Promise<boolean>;
+  onNotify: (message: string) => void;
   onContentChange: (content: string) => void;
   canUndoContent: boolean;
   canRedoContent: boolean;
@@ -50,7 +54,11 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
   onRemoveRecent,
   onClearRecent,
   onAnnotationsChange,
+  onPdfDocumentChange,
+  onPdfSignaturesChange,
+  onPdfRotationChange,
   onSavePdf,
+  onNotify,
   onContentChange,
   canUndoContent,
   canRedoContent,
@@ -83,7 +91,13 @@ export const DocumentContentArea: React.FC<DocumentContentAreaProps> = ({
         comments={activeTab.pdfComments || []}
         zoom={zoom}
         onAnnotationsChange={onAnnotationsChange}
+        onPdfDocumentChange={onPdfDocumentChange}
+        signatures={activeTab.pdfSignatures || []}
+        rotation={activeTab.pdfRotation || 0}
+        onPdfSignaturesChange={onPdfSignaturesChange}
+        onPdfRotationChange={onPdfRotationChange}
         onSavePdf={onSavePdf}
+        onNotify={onNotify}
       />
     );
   }

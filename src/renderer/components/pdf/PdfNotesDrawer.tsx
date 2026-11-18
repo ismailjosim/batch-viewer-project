@@ -103,7 +103,10 @@ export const PdfNotesDrawer: React.FC<PdfNotesDrawerProps> = ({
                       style={{ backgroundColor: h.color }}
                       className="h-3 w-3 shrink-0 rounded-full border border-black/20"
                     />
-                    <span className="text-xs font-medium">Highlight on Page {h.pageNumber}</span>
+                    <span className="text-xs font-medium">
+                      {h.style === 'underline' ? 'Underline' : 'Highlight'} on Page {h.pageNumber}
+                      {h.text && <span className="block truncate text-[10px] opacity-60">{h.text}</span>}
+                    </span>
                   </div>
                   <button
                     onClick={(e) => {

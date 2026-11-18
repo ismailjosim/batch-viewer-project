@@ -103,6 +103,56 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
     [activeTabId]
   );
 
+  const handlePdfDocumentChange = useCallback(
+    (base64Data: string, pageOrder?: number[]) => {
+      setTabs((prev) =>
+        prev.map((tab) => {
+          if (tab.id !== activeTabId) return tab;
+          const remapPages = <T extends { pageNumber: number }>(items: T[] = []) =>
+            items.flatMap((item) => {
+              const nextPage = pageOrder ? pageOrder.indexOf(item.pageNumber) : item.pageNumber - 1;
+              return nextPage < 0 ? [] : [{ ...item, pageNumber: nextPage + 1 }];
+            });
+          return {
+            ...tab,
+            base64Data,
+            pdfHighlights: remapPages(tab.pdfHighlights),
+            pdfComments: remapPages(tab.pdfComments),
+            pdfSignatures: remapPages(tab.pdfSignatures),
+            isDirty: true,
+          };
+        })
+      );
+    },
+    [activeTabId]
+  );
+
+  const handlePdfSignaturesChange = useCallback(
+    (signatures: NonNullable<DocumentTab['pdfSignatures']>) => {
+      setTabs((prev) =>
+        prev.map((tab) =>
+          tab.id === activeTabId
+            ? { ...tab, pdfSignatures: signatures, isDirty: true }
+            : tab
+        )
+      );
+    },
+    [activeTabId]
+  );
+
+  const handlePdfRotationChange = useCallback(
+    (rotation: number) => {
+      setTabs((prev) =>
+        prev.map((tab) =>
+          tab.id === activeTabId
+            ? { ...tab, pdfRotation: rotation, isDirty: true }
+            : tab
+        )
+      );
+    },
+    [activeTabId]
+  );
+
   // Open single file helper
   const openFileFromDisk = useCallback(
     async (path: string) => {
@@ -322,11 +372,11 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
 
   // Save PDF annotations
   const handleSavePdf = async (newBase64: string) => {
-    if (!window.api || !activeTab) return;
+    if (!window.api || !activeTab) return false;
     let targetPath = activeTab.filePath;
     if (!targetPath) {
       targetPath = await window.api.saveFileDialog('Document_annotated.pdf');
-      if (!targetPath) return;
+      if (!targetPath) return false;
     }
 
     const res = await window.api.saveBinaryFile(targetPath, newBase64);
@@ -340,6 +390,8 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
               filePath: targetPath,
               fileName: savedName,
               base64Data: newBase64,
+              pdfSignatures: [],
+              pdfRotation: 0,
               isDirty: false,
             };
           }
@@ -348,6 +400,7 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
       );
       onAddToRecents(targetPath, savedName, 'pdf');
     }
+    return res.success;
   };
 
   // Zoom helpers
@@ -385,6 +438,9 @@ export function useDocumentTabs({ onAddToRecents }: UseDocumentTabsProps) {
     handleUndoContent,
     handleRedoContent,
     handlePdfAnnotationsChange,
+    handlePdfDocumentChange,
+    handlePdfSignaturesChange,
+    handlePdfRotationChange,
     handleSaveFile,
     handleSavePdf,
     updateZoom,

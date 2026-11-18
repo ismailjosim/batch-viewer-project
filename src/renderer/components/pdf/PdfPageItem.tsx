@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
-import { PdfHighlight, PdfComment } from '../../types';
+import { PdfHighlight, PdfComment, PdfSignature, PdfOcrWord } from '../../types';
 import { MessageSquare, Trash2 } from 'lucide-react';
 
 interface PdfPageProps {
@@ -8,10 +8,22 @@ interface PdfPageProps {
   pageNumber: number;
   zoom: number;
   containerWidth: number;
-  activeTool: 'select' | 'highlight' | 'comment';
+  containerHeight: number;
+  fitPage: boolean;
+  rotation: number;
+  searchQuery: string;
+  activeTool:
+    | 'select'
+    | 'highlight'
+    | 'text-highlight'
+    | 'underline'
+    | 'comment'
+    | 'signature';
   highlightColor: string;
   highlights: PdfHighlight[];
   comments: PdfComment[];
+  signatures: PdfSignature[];
+  ocrWords: PdfOcrWord[];
   activeCommentId: string | null;
   currentDragBox: {
     x: number;
@@ -27,6 +39,7 @@ interface PdfPageProps {
   onDeleteHighlight: (id: string) => void;
   onToggleComment: (id: string) => void;
   onDeleteComment: (id: string) => void;
+  onDeleteSignature: (id: string) => void;
   setPageRef: (el: HTMLDivElement | null) => void;
 }
 
@@ -35,9 +48,15 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
   pageNumber,
   zoom,
   containerWidth,
+  containerHeight,
+  fitPage,
+  rotation,
+  searchQuery,
   activeTool,
   highlights,
   comments,
+  signatures,
+  ocrWords,
   activeCommentId,
   currentDragBox,
   onPageClick,
@@ -47,10 +66,14 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
   onDeleteHighlight,
   onToggleComment,
   onDeleteComment,
+  onDeleteSignature,
   setPageRef,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const renderTaskRef = useRef<any>(null);
+  const textLayerRef = useRef<HTMLDivElement>(null);
+  const ocrLayerRef = useRef<HTMLDivElement>(null);
+  const renderTaskRef = useRef<ReturnType<pdfjsLib.PDFPageProxy['render']> | null>(null);
+  const textRenderTaskRef = useRef<ReturnType<typeof pdfjsLib.renderTextLayer> | null>(null);
   const [pageSize, setPageSize] = useState<{ width: number; height: number }>({
     width: 595,
     height: 842,
@@ -60,7 +83,8 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
   useEffect(() => {
     let isCancelled = false;
     const canvas = canvasRef.current;
-    if (!canvas || !pdfDoc) return;
+    const textLayer = textLayerRef.current;
+    if (!canvas || !textLayer || !pdfDoc) return;
 
     const render = async () => {
       try {
@@ -70,14 +94,19 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
           } catch {}
           renderTaskRef.current = null;
         }
+        textRenderTaskRef.current?.cancel();
+        textRenderTaskRef.current = null;
 
         const page = await pdfDoc.getPage(pageNumber);
         if (isCancelled) return;
 
-        const unscaledViewport = page.getViewport({ scale: 1 });
+        const pageRotation = ((page.rotate + rotation) % 360 + 360) % 360;
+        const unscaledViewport = page.getViewport({ scale: 1, rotation: pageRotation });
         const availableWidth = Math.max(300, (containerWidth || 800) - 80);
-        const fitScale = (availableWidth / unscaledViewport.width) * zoom;
-        const viewport = page.getViewport({ scale: fitScale });
+        const widthScale = availableWidth / unscaledViewport.width;
+        const heightScale = Math.max(200, containerHeight - 140) / unscaledViewport.height;
+        const fitScale = (fitPage ? Math.min(widthScale, heightScale) : widthScale) * zoom;
+        const viewport = page.getViewport({ scale: fitScale, rotation: pageRotation });
 
         const dpr = window.devicePixelRatio || 1;
         canvas.width = Math.floor(viewport.width * dpr);
@@ -102,7 +131,21 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
 
         const task = page.render(renderContext);
         renderTaskRef.current = task;
-        await task.promise;
+        const textContent = await page.getTextContent();
+        if (isCancelled) {
+          task.cancel();
+          return;
+        }
+
+        textLayer.replaceChildren();
+        const textTask = pdfjsLib.renderTextLayer({
+          textContentSource: textContent,
+          container: textLayer,
+          viewport,
+          textDivs: [],
+        });
+        textRenderTaskRef.current = textTask;
+        await Promise.all([task.promise, textTask.promise]);
 
         if (!isCancelled) {
           setIsRendered(true);
@@ -123,26 +166,84 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
           renderTaskRef.current.cancel();
         } catch {}
       }
+      textRenderTaskRef.current?.cancel();
     };
-  }, [pdfDoc, pageNumber, zoom, containerWidth]);
+  }, [pdfDoc, pageNumber, zoom, containerWidth, containerHeight, fitPage, rotation]);
+
+  useEffect(() => {
+    const query = searchQuery.trim().toLocaleLowerCase();
+    const textLayers = [textLayerRef.current, ocrLayerRef.current].filter(
+      (layer): layer is HTMLDivElement => Boolean(layer)
+    );
+
+    textLayers.forEach((textLayer) => {
+      textLayer.querySelectorAll('span').forEach((span) => {
+        span.classList.toggle(
+          'pdf-search-match',
+          Boolean(query && span.textContent?.toLocaleLowerCase().includes(query))
+        );
+      });
+    });
+  }, [searchQuery, isRendered, ocrWords]);
 
   return (
     <div
       ref={setPageRef}
+      role="group"
+      aria-label={`PDF page ${pageNumber}`}
+      tabIndex={activeTool === 'select' ? 0 : -1}
       style={{ width: pageSize.width, height: pageSize.height }}
       onClick={(e) => onPageClick(e, pageNumber)}
       onMouseDown={(e) => onMouseDown(e, pageNumber)}
       onMouseMove={(e) => onMouseMove(e, pageNumber)}
       onMouseUp={(e) => onMouseUp(e, pageNumber)}
-      className={`rounded-xs relative select-none bg-white shadow-2xl transition-shadow ${
+      className={`rounded-xs relative ${
+        activeTool === 'select' || activeTool === 'text-highlight' || activeTool === 'underline'
+          ? 'select-text'
+          : 'select-none'
+      } bg-white shadow-2xl transition-shadow ${
         activeTool === 'highlight'
           ? 'cursor-crosshair'
           : activeTool === 'comment'
             ? 'cursor-cell'
+            : activeTool === 'text-highlight' || activeTool === 'underline'
+              ? 'cursor-text'
             : 'cursor-default'
       }`}
     >
       <canvas ref={canvasRef} className="block h-full w-full" />
+      <div
+        ref={textLayerRef}
+        className={`pdf-text-layer ${
+          activeTool === 'select' || activeTool === 'text-highlight' || activeTool === 'underline'
+            ? 'select-text'
+            : 'select-none'
+        }`}
+        aria-label={`Selectable text on page ${pageNumber}`}
+      />
+      {ocrWords.length > 0 && (
+        <div
+          ref={ocrLayerRef}
+          className="pdf-ocr-layer select-text"
+          aria-label={`OCR text on page ${pageNumber}`}
+        >
+          {ocrWords.map((word, index) => (
+            <span
+              key={`${index}-${word.text}`}
+              style={{
+                left: `${word.xPct * 100}%`,
+                top: `${word.yPct * 100}%`,
+                width: `${word.widthPct * 100}%`,
+                height: `${word.heightPct * 100}%`,
+                fontSize: `${Math.max(8, word.heightPct * pageSize.height)}px`,
+              }}
+              className="pdf-ocr-word"
+            >
+              {word.text}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Highlights Overlay */}
       {isRendered &&
@@ -151,12 +252,12 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
             key={h.id}
             style={{
               left: `${h.xPct * 100}%`,
-              top: `${h.yPct * 100}%`,
+              top: h.style === 'underline' ? `${(h.yPct + h.heightPct) * 100}%` : `${h.yPct * 100}%`,
               width: `${h.widthPct * 100}%`,
-              height: `${h.heightPct * 100}%`,
+              height: h.style === 'underline' ? '2px' : `${h.heightPct * 100}%`,
               backgroundColor: h.color,
             }}
-            className="rounded-xs group pointer-events-auto absolute cursor-pointer opacity-40 transition-opacity hover:opacity-60"
+            className="rounded-xs group pointer-events-auto absolute z-10 cursor-pointer opacity-40 transition-opacity hover:opacity-60"
             title="Click to remove highlight"
             onClick={(e) => {
               e.stopPropagation();
@@ -234,6 +335,32 @@ export const PdfPageItem: React.FC<PdfPageProps> = ({
             )}
           </div>
         ))}
+
+      {signatures.map((signature) => (
+        <div
+          key={signature.id}
+          style={{
+            left: `${signature.xPct * 100}%`,
+            top: `${signature.yPct * 100}%`,
+            width: '35%',
+          }}
+          className="pointer-events-none absolute z-10"
+        >
+          <img
+            src={signature.imageDataUrl}
+            alt={`Signature: ${signature.text}`}
+            className="pointer-events-none w-full"
+          />
+          <button
+            type="button"
+            onClick={() => onDeleteSignature(signature.id)}
+            aria-label="Remove signature"
+            className="pointer-events-auto absolute -right-2 -top-2 rounded-full bg-red-600 px-1 text-[10px] text-white"
+          >
+            ×
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

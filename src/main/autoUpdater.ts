@@ -2,7 +2,6 @@ import { autoUpdater, UpdateInfo } from 'electron-updater';
 import { app, ipcMain, BrowserWindow } from 'electron';
 
 let mainWindowRef: BrowserWindow | null = null;
-let isUpdateAvailable = false;
 let isDownloading = false;
 
 export function registerAutoUpdater(win: BrowserWindow) {
@@ -14,7 +13,6 @@ export function registerAutoUpdater(win: BrowserWindow) {
 
   // Auto Updater Events
   autoUpdater.on('update-available', (info: UpdateInfo) => {
-    isUpdateAvailable = true;
     if (mainWindowRef && !mainWindowRef.isDestroyed()) {
       mainWindowRef.webContents.send('update:available', {
         version: info.version,
@@ -71,7 +69,11 @@ export function registerUpdateIpcHandlers() {
   ipcMain.handle('update:check', async () => {
     try {
       const result = await autoUpdater.checkForUpdates();
-      return { success: true, updateInfo: result?.updateInfo };
+      return {
+        success: true,
+        isUpdateAvailable: result?.isUpdateAvailable ?? false,
+        updateInfo: result?.updateInfo,
+      };
     } catch (err: any) {
       return { success: false, error: err?.message };
     }

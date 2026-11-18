@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorkerRaw from 'pdfjs-dist/build/pdf.worker.min.js?raw';
-import { PDFDocument, rgb } from 'pdf-lib';
-import { PdfHighlight, PdfComment } from '../../types';
+import { degrees, PDFDocument, rgb } from 'pdf-lib';
+import { PdfHighlight, PdfComment, PdfSignature } from '../../types';
 
 // Configure in-memory PDF.js worker
 if (typeof window !== 'undefined') {
@@ -19,13 +19,17 @@ interface UsePdfDocumentProps {
   base64Data: string;
   highlights: PdfHighlight[];
   comments: PdfComment[];
-  onSavePdf: (newBase64: string) => Promise<void>;
+  signatures: PdfSignature[];
+  rotation: number;
+  onSavePdf: (newBase64: string) => Promise<boolean>;
 }
 
 export function usePdfDocument({
   base64Data,
   highlights,
   comments,
+  signatures,
+  rotation,
   onSavePdf,
 }: UsePdfDocumentProps) {
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
@@ -82,8 +86,8 @@ export function usePdfDocument({
   }, [base64Data]);
 
   // Save PDF annotations
-  const handleSaveWithAnnotations = async () => {
-    if (!base64Data || isSaving) return;
+  const handleSaveWithAnnotations = async (): Promise<boolean> => {
+    if (!base64Data || isSaving) return false;
     setIsSaving(true);
     try {
       const cleanBase64 = base64Data.includes(',') ? base64Data.split(',')[1] : base64Data;
@@ -97,6 +101,12 @@ export function usePdfDocument({
       const loadedPdf = await PDFDocument.load(bytes);
       const pages = loadedPdf.getPages();
 
+      if (rotation !== 0) {
+        for (const page of pages) {
+          page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
+        }
+      }
+
       const parseColor = (hex: string) => {
         if (hex.startsWith('#')) hex = hex.substring(1);
         const r = parseInt(hex.substring(0, 2), 16) / 255;
@@ -109,14 +119,26 @@ export function usePdfDocument({
         if (h.pageNumber <= pages.length) {
           const page = pages[h.pageNumber - 1];
           const { width, height } = page.getSize();
-          page.drawRectangle({
-            x: h.xPct * width,
-            y: height - (h.yPct * height + h.heightPct * height),
-            width: h.widthPct * width,
-            height: h.heightPct * height,
-            color: parseColor(h.color),
-            opacity: 0.35,
-          });
+          const x = h.xPct * width;
+          const y = height - (h.yPct * height + h.heightPct * height);
+          const annotationColor = parseColor(h.color);
+          if (h.style === 'underline') {
+            page.drawLine({
+              start: { x, y },
+              end: { x: x + h.widthPct * width, y },
+              thickness: 1.5,
+              color: annotationColor,
+            });
+          } else {
+            page.drawRectangle({
+              x,
+              y,
+              width: h.widthPct * width,
+              height: h.heightPct * height,
+              color: annotationColor,
+              opacity: 0.35,
+            });
+          }
         }
       }
 
@@ -134,13 +156,34 @@ export function usePdfDocument({
         }
       }
 
+      for (const signature of signatures) {
+        if (signature.pageNumber <= pages.length) {
+          const page = pages[signature.pageNumber - 1];
+          const { width, height } = page.getSize();
+          const imageBinary = atob(signature.imageDataUrl.split(',')[1]);
+          const imageData = Uint8Array.from(imageBinary, (char) => char.charCodeAt(0));
+          const image = await loadedPdf.embedPng(imageData);
+          const imageWidth = width * 0.35;
+          const imageHeight = (imageWidth * image.height) / image.width;
+          page.drawImage(image, {
+            x: signature.xPct * width,
+            y: height - signature.yPct * height - imageHeight,
+            width: imageWidth,
+            height: imageHeight,
+          });
+        }
+      }
+
       const updatedBase64 = await loadedPdf.saveAsBase64({ dataUri: false });
-      await onSavePdf(updatedBase64);
+      const saved = await onSavePdf(updatedBase64);
+      if (!saved) return false;
 
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
+      return true;
     } catch (err) {
       console.error('Failed to save PDF annotations:', err);
+      return false;
     } finally {
       setIsSaving(false);
     }

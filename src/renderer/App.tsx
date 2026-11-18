@@ -35,6 +35,9 @@ export const App: React.FC = () => {
     handleUndoContent,
     handleRedoContent,
     handlePdfAnnotationsChange,
+    handlePdfDocumentChange,
+    handlePdfSignaturesChange,
+    handlePdfRotationChange,
     handleSaveFile,
     handleSavePdf,
     updateZoom,
@@ -49,9 +52,35 @@ export const App: React.FC = () => {
   const [updateToast, setUpdateToast] = useState<string | null>(null);
   const [manualCheckTrigger, setManualCheckTrigger] = useState<number>(0);
   const [externalScrollPct, setExternalScrollPct] = useState<number | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const isOverviewActive = activeTabId === 'overview' || tabs.length === 0 || !activeTab;
+
+  const dismissToast = useCallback(() => {
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
+    setUpdateToast(null);
+  }, []);
+
+  const showToast = useCallback((message: string, duration = 3500) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setUpdateToast(message);
+    toastTimeoutRef.current = setTimeout(() => {
+      setUpdateToast(null);
+      toastTimeoutRef.current = null;
+    }, duration);
+  }, []);
+  const showUpdateToast = useCallback((message: string) => showToast(message, 4000), [showToast]);
+
+  useEffect(
+    () => () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    },
+    []
+  );
 
   // Toggle theme class on document
   useEffect(() => {
@@ -92,12 +121,10 @@ export const App: React.FC = () => {
       if (tabs.length === 0 && items.length > 0) {
         await openFileFromDisk(items[0].path);
       } else {
-        setUpdateToast(`Opened folder "${folderName}" (${items.length} documents)`);
-        setTimeout(() => setUpdateToast(null), 3000);
+        showToast(`Opened folder "${folderName}" (${items.length} documents)`, 3000);
       }
     } else {
-      setUpdateToast(`No supported documents found in selected folder`);
-      setTimeout(() => setUpdateToast(null), 3000);
+      showToast('No supported documents found in selected folder', 3000);
     }
   };
 
@@ -121,8 +148,7 @@ export const App: React.FC = () => {
     if (!window.api) return;
     const result = await window.api.exportPDF();
     if (result.success && result.path) {
-      setUpdateToast(`Exported to PDF: ${result.path.split(/[\/\\]/).pop()}`);
-      setTimeout(() => setUpdateToast(null), 3500);
+      showToast(`Exported to PDF: ${result.path.split(/[\/\\]/).pop()}`);
     }
   };
 
@@ -131,11 +157,9 @@ export const App: React.FC = () => {
     if (!activeTab) return;
     const result = await exportMarkdownToHtml(activeTab.fileName);
     if (result.success && result.path) {
-      setUpdateToast(`Exported HTML: ${result.path.split(/[\/\\]/).pop()}`);
-      setTimeout(() => setUpdateToast(null), 3500);
+      showToast(`Exported HTML: ${result.path.split(/[\/\\]/).pop()}`);
     } else if (result.error) {
-      setUpdateToast(`Export failed: ${result.error}`);
-      setTimeout(() => setUpdateToast(null), 3500);
+      showToast(`Export failed: ${result.error}`);
     }
   };
 
@@ -146,20 +170,16 @@ export const App: React.FC = () => {
       if (tabs.length === 0 && folder.files.length > 0) {
         openFileFromDisk(folder.files[0].path);
       } else {
-        setUpdateToast(`Opened folder "${folder.folderName}" (${folder.files.length} documents)`);
-        setTimeout(() => setUpdateToast(null), 3000);
+        showToast(`Opened folder "${folder.folderName}" (${folder.files.length} documents)`, 3000);
       }
     },
-    [tabs.length, openFileFromDisk]
+    [tabs.length, openFileFromDisk, showToast]
   );
 
   const { isDragging, handleDragEnter, handleDragOver, handleDragLeave, handleDrop } = useFileDrop({
     onOpenFiles: openMultipleFilesFromDisk,
     onOpenFolder: handleOpenFolderFromDrop,
-    onToast: (msg) => {
-      setUpdateToast(msg);
-      setTimeout(() => setUpdateToast(null), 3000);
-    },
+    onToast: (msg) => showToast(msg, 3000),
   });
 
   // Keyboard Shortcuts Hook
@@ -254,7 +274,11 @@ export const App: React.FC = () => {
             onRemoveRecent={removeRecent}
             onClearRecent={clearRecents}
             onAnnotationsChange={handlePdfAnnotationsChange}
+            onPdfDocumentChange={handlePdfDocumentChange}
+            onPdfSignaturesChange={handlePdfSignaturesChange}
+            onPdfRotationChange={handlePdfRotationChange}
             onSavePdf={handleSavePdf}
+            onNotify={showToast}
             onContentChange={handleContentChange}
             canUndoContent={!!activeTab?.contentUndoStack.length}
             canRedoContent={!!activeTab?.contentRedoStack.length}
@@ -301,14 +325,11 @@ export const App: React.FC = () => {
       {/* Auto-Update Interactive Notification Banner */}
       <UpdateNotification
         manualCheckTrigger={manualCheckTrigger}
-        onToastMessage={(msg) => {
-          setUpdateToast(msg);
-          setTimeout(() => setUpdateToast(null), 4000);
-        }}
+        onToastMessage={showUpdateToast}
       />
 
       {/* Toast Notification */}
-      <ToastNotification message={updateToast} onClose={() => setUpdateToast(null)} />
+      <ToastNotification message={updateToast} onClose={dismissToast} />
     </div>
   );
 };

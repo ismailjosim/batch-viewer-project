@@ -5,6 +5,89 @@
 @tailwind components;
 @tailwind utilities;
 
+.pdf-text-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  line-height: 1;
+  transform-origin: 0 0;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+.pdf-text-layer :is(span, br) {
+  position: absolute;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
+}
+
+.pdf-ocr-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.pdf-ocr-word {
+  position: absolute;
+  overflow: hidden;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
+}
+
+.pdf-text-layer ::selection {
+  background: Highlight;
+}
+
+.pdf-search-match {
+  background-color: rgba(255, 205, 0, 0.65);
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .pdf-print-pages,
+  .pdf-print-pages * {
+    visibility: visible !important;
+  }
+
+  .pdf-print-pages {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+    background: white !important;
+    padding: 0 !important;
+  }
+
+  .pdf-print-pages > * {
+    break-inside: avoid;
+    break-after: page;
+    box-shadow: none !important;
+  }
+
+  .pdf-toolbar,
+  .pdf-navigation-sidebar,
+  .pdf-search-panel {
+    display: none !important;
+  }
+}
+
 /* Fluent Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;

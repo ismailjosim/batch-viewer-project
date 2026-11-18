@@ -9,6 +9,7 @@ export interface PdfHighlight {
   heightPct: number;
   color: string; // e.g. '#ffe066', '#a5d8ff', '#ffc9c9', '#b2f2bb'
   text?: string;
+  style?: 'highlight' | 'underline';
 }
 
 export interface PdfComment {
@@ -19,6 +20,23 @@ export interface PdfComment {
   text: string;
   author: string;
   createdAt: string;
+}
+
+export interface PdfSignature {
+  id: string;
+  pageNumber: number;
+  xPct: number;
+  yPct: number;
+  text: string;
+  imageDataUrl: string;
+}
+
+export interface PdfOcrWord {
+  text: string;
+  xPct: number;
+  yPct: number;
+  widthPct: number;
+  heightPct: number;
 }
 
 export interface RecentDocument {
@@ -56,6 +74,8 @@ export interface DocumentTab {
   lastContentEditAt: number;
   pdfHighlights?: PdfHighlight[];
   pdfComments?: PdfComment[];
+  pdfSignatures?: PdfSignature[];
+  pdfRotation?: number;
   zoom?: number;
   currentPage?: number;
 }

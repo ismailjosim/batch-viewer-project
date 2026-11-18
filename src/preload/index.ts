@@ -39,6 +39,13 @@ export interface UpdateProgressData {
   total?: number;
 }
 
+export interface UpdateCheckResult {
+  success: boolean;
+  isUpdateAvailable?: boolean;
+  updateInfo?: UpdateInfoData;
+  error?: string;
+}
+
 export interface ElectronAPI {
   // Window
   minimize: () => Promise<void>;
@@ -90,7 +97,7 @@ export interface ElectronAPI {
   onFileChangedOnDisk: (callback: (filePath: string) => void) => () => void;
 
   // Auto Updater
-  checkForUpdates: () => Promise<{ success: boolean; updateInfo?: any; error?: string }>;
+  checkForUpdates: () => Promise<UpdateCheckResult>;
   startUpdateDownload: () => Promise<{ success: boolean; error?: string; alreadyDownloading?: boolean }>;
   installUpdateNow: () => Promise<boolean>;
   onUpdateAvailable: (callback: (info: UpdateInfoData) => void) => () => void;

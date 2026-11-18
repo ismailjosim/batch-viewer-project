@@ -69,17 +69,32 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
     if (onToastMessage) onToastMessage('Checking for updates...');
 
     window.api.checkForUpdates().then((res) => {
-      if (res.success && res.updateInfo) {
-        // Handled via onUpdateAvailable event if version is higher
-      } else if (res.error) {
-        if (onToastMessage) onToastMessage(`Update check: ${res.error}`);
+      if (!res.success || res.error) {
+        if (onToastMessage) onToastMessage(`Update check failed: ${res.error || 'Unknown error'}`);
+      } else if (res.isUpdateAvailable && res.updateInfo) {
+        if (onToastMessage) onToastMessage(`Update available: version ${res.updateInfo.version}`);
       } else {
-        if (onToastMessage) onToastMessage('You are running the latest version!');
+        const currentVersion = res.updateInfo?.version;
+        if (onToastMessage) {
+          onToastMessage(
+            currentVersion
+              ? `You are running the latest version (v${currentVersion}).`
+              : 'You are running the latest version.'
+          );
+        }
       }
     }).catch(() => {
       if (onToastMessage) onToastMessage('Unable to connect to update server');
     });
   }, [manualCheckTrigger, onToastMessage]);
+
+  const releaseNotes =
+    typeof updateInfo?.releaseNotes === 'string'
+      ? updateInfo.releaseNotes
+      : updateInfo?.releaseNotes
+          ?.map(({ note }) => note)
+          .filter((note): note is string => Boolean(note))
+          .join('\n');
 
   const handleStartDownload = async () => {
     setIsDownloading(true);
@@ -168,6 +183,12 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({
             <AlertCircle className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{errorMsg}</span>
           </div>
+        )}
+
+        {releaseNotes && !isDownloaded && (
+          <p className="mt-3 max-h-20 overflow-y-auto whitespace-pre-wrap rounded-lg bg-black/5 px-2.5 py-2 text-[11px] leading-relaxed text-fluent-text-secondaryLight dark:bg-white/5 dark:text-fluent-text-secondaryDark">
+            {releaseNotes}
+          </p>
         )}
 
         {/* Actions */}
