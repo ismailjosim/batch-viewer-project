@@ -41,8 +41,11 @@
   transform-origin: 0 0;
 }
 
-.pdf-text-layer ::selection {
+.pdf-text-layer ::selection,
+.pdf-ocr-layer ::selection {
   background: Highlight;
+  color: HighlightText;
+  -webkit-text-fill-color: HighlightText;
 }
 
 .pdf-search-match {
